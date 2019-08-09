@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name fluepdot)(type Legacy)(uri ${KIPRJMOD}/fluepdot.lib)(options "")(descr ""))
+  (lib (name EXB-A10P103J)(type Legacy)(uri ${KIPRJMOD}/lib/EXB-A10P103J.lib)(options "")(descr ""))
+)

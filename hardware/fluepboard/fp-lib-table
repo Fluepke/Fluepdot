@@ -1,0 +1,8 @@
+(fp_lib_table
+  (lib (name MF-MSMF050-2)(type Legacy)(uri ${KIPRJMOD}/lib/MF-MSMF050-2.mod)(options "")(descr ""))
+  (lib (name fluepdot)(type KiCad)(uri ${KIPRJMOD}/fluepdot.pretty)(options "")(descr ""))
+  (lib (name SC-88)(type Legacy)(uri ${KIPRJMOD}/lib/SC-88.mod)(options "")(descr ""))
+  (lib (name B3U-1000P)(type Legacy)(uri ${KIPRJMOD}/lib/B3U-1000P.mod)(options "")(descr ""))
+  (lib (name HIROSE_CX70M-24P1)(type KiCad)(uri ${KIPRJMOD}/lib/HIROSE_CX70M-24P1.pretty)(options "")(descr ""))
+  (lib (name EXB-A10P103J)(type KiCad)(uri ${KIPRJMOD}/lib/EXB-A10P103J.pretty)(options "")(descr ""))
+)

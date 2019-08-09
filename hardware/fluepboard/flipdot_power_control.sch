@@ -1,0 +1,218 @@
+EESchema Schematic File Version 4
+LIBS:fluepdot-cache
+EELAYER 29 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 6 6
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L power:+12V #PWR?
+U 1 1 5CB72A62
+P 2500 850
+AR Path="/5CB72A62" Ref="#PWR?"  Part="1" 
+AR Path="/5CA94BFB/5CB652B2/5CB72A62" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 2500 700 50  0001 C CNN
+F 1 "+12V" H 2515 1023 50  0000 C CNN
+F 2 "" H 2500 850 50  0001 C CNN
+F 3 "" H 2500 850 50  0001 C CNN
+	1    2500 850 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2500 850  2500 1050
+Wire Wire Line
+	2500 1250 2600 1250
+Wire Wire Line
+	2500 1150 2600 1150
+Connection ~ 2500 1150
+Wire Wire Line
+	2500 1150 2500 1250
+Wire Wire Line
+	2500 1050 2600 1050
+Connection ~ 2500 1050
+Wire Wire Line
+	2500 1050 2500 1150
+Wire Wire Line
+	3300 1050 3400 1050
+Wire Wire Line
+	3400 1050 3400 1150
+Wire Wire Line
+	3300 1150 3400 1150
+Connection ~ 3400 1150
+Wire Wire Line
+	3400 1150 3400 1250
+Wire Wire Line
+	3300 1250 3400 1250
+Connection ~ 3400 1250
+Wire Wire Line
+	3400 1250 3400 1350
+Wire Wire Line
+	3300 1350 3400 1350
+Connection ~ 3400 1350
+$Comp
+L Transistor_BJT:BC847 Q?
+U 1 1 5CB72A7B
+P 2150 1650
+AR Path="/5CB72A7B" Ref="Q?"  Part="1" 
+AR Path="/5CA94BFB/5CB652B2/5CB72A7B" Ref="Q2"  Part="1" 
+F 0 "Q2" H 2341 1696 50  0000 L CNN
+F 1 "BC847" H 2341 1605 50  0000 L CNN
+F 2 "Package_TO_SOT_SMD:SOT-23" H 2350 1575 50  0001 L CIN
+F 3 "http://www.infineon.com/dgdl/Infineon-BC847SERIES_BC848SERIES_BC849SERIES_BC850SERIES-DS-v01_01-en.pdf?fileId=db3a304314dca389011541d4630a1657" H 2150 1650 50  0001 L CNN
+F 4 "BC847,215" H 2150 1650 50  0001 C CNN "Octopart"
+	1    2150 1650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R?
+U 1 1 5CB72A81
+P 2250 1100
+AR Path="/5CB72A81" Ref="R?"  Part="1" 
+AR Path="/5CA94BFB/5CB652B2/5CB72A81" Ref="R16"  Part="1" 
+F 0 "R16" H 2320 1146 50  0000 L CNN
+F 1 "10k" H 2320 1055 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 2180 1100 50  0001 C CNN
+F 3 "~" H 2250 1100 50  0001 C CNN
+F 4 "RC0805FR-0710KL" H 2250 1100 50  0001 C CNN "Octopart"
+	1    2250 1100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2250 1250 2250 1350
+Wire Wire Line
+	2250 1350 2600 1350
+Connection ~ 2250 1350
+Wire Wire Line
+	2250 1350 2250 1450
+$Comp
+L power:+12V #PWR?
+U 1 1 5CB78F8E
+P 2250 850
+AR Path="/5CB78F8E" Ref="#PWR?"  Part="1" 
+AR Path="/5CA94BFB/5CB652B2/5CB78F8E" Ref="#PWR?"  Part="1" 
+F 0 "#PWR?" H 2250 700 50  0001 C CNN
+F 1 "+12V" H 2265 1023 50  0000 C CNN
+F 2 "" H 2250 850 50  0001 C CNN
+F 3 "" H 2250 850 50  0001 C CNN
+	1    2250 850 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2250 950  2250 850 
+$Comp
+L Device:R R14
+U 1 1 5CB79B33
+P 1650 1650
+F 0 "R14" V 1443 1650 50  0000 C CNN
+F 1 "470R" V 1534 1650 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 1580 1650 50  0001 C CNN
+F 3 "~" H 1650 1650 50  0001 C CNN
+F 4 "RC0805FR-07470RL" H 1650 1650 50  0001 C CNN "Octopart"
+	1    1650 1650
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5CB7AC0D
+P 2250 2350
+F 0 "#PWR?" H 2250 2100 50  0001 C CNN
+F 1 "GND" H 2255 2177 50  0000 C CNN
+F 2 "" H 2250 2350 50  0001 C CNN
+F 3 "" H 2250 2350 50  0001 C CNN
+	1    2250 2350
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:D D7
+U 1 1 5CB7BDC5
+P 3400 1600
+F 0 "D7" V 3354 1679 50  0000 L CNN
+F 1 "SS34" V 3445 1679 50  0000 L CNN
+F 2 "Diode_SMD:D_SMC" H 3400 1600 50  0001 C CNN
+F 3 "~" H 3400 1600 50  0001 C CNN
+F 4 "SS34-E3/57T" H 3400 1600 50  0001 C CNN "Octopart"
+	1    3400 1600
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3400 1450 3400 1350
+$Comp
+L power:GND #PWR?
+U 1 1 5CB7C83D
+P 3400 2350
+F 0 "#PWR?" H 3400 2100 50  0001 C CNN
+F 1 "GND" H 3405 2177 50  0000 C CNN
+F 2 "" H 3400 2350 50  0001 C CNN
+F 3 "" H 3400 2350 50  0001 C CNN
+	1    3400 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3400 2350 3400 1750
+Wire Wire Line
+	1400 1650 1500 1650
+Text HLabel 3500 1050 2    50   Output ~ 10
+VFlipdot
+Wire Wire Line
+	3400 1050 3500 1050
+Connection ~ 3400 1050
+Text HLabel 1400 1650 0    50   Input ~ 10
+Flipdot_Power_On
+$Comp
+L Device:R R?
+U 1 1 5CC058A1
+P 1900 2100
+AR Path="/5CC058A1" Ref="R?"  Part="1" 
+AR Path="/5CA94BFB/5CB652B2/5CC058A1" Ref="R15"  Part="1" 
+F 0 "R15" H 1970 2146 50  0000 L CNN
+F 1 "10k" H 1970 2055 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric" V 1830 2100 50  0001 C CNN
+F 3 "~" H 1900 2100 50  0001 C CNN
+F 4 "RC0805FR-0710KL" H 1900 2100 50  0001 C CNN "Octopart"
+	1    1900 2100
+	1    0    0    -1  
+$EndComp
+$Comp
+L fluepdot:SI4835DDY-T1-E3 IC3
+U 1 1 5CC04B9C
+P 2950 1200
+F 0 "IC3" H 2950 1615 50  0000 C CNN
+F 1 "SI4835DDY-T1-E3" H 2950 1524 50  0000 C CNN
+F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 2950 1200 50  0001 C CNN
+F 3 "" H 2950 1200 50  0001 C CNN
+F 4 "SI4835DDY-T1-E3" H 2950 1200 50  0001 C CNN "Octopart"
+	1    2950 1200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1800 1650 1900 1650
+Wire Wire Line
+	1900 1950 1900 1650
+Connection ~ 1900 1650
+Wire Wire Line
+	1900 1650 1950 1650
+$Comp
+L power:GND #PWR?
+U 1 1 5CC59FAA
+P 1900 2350
+F 0 "#PWR?" H 1900 2100 50  0001 C CNN
+F 1 "GND" H 1905 2177 50  0000 C CNN
+F 2 "" H 1900 2350 50  0001 C CNN
+F 3 "" H 1900 2350 50  0001 C CNN
+	1    1900 2350
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1900 2350 1900 2250
+Wire Wire Line
+	2250 1850 2250 2350
+$EndSCHEMATC
