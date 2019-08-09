@@ -1,0 +1,39 @@
+menu "Flipdot configuration"
+    config FLIPDOT_DEFAULT_ONTIME
+        int "Rendering cycle duration in microseconds"
+        default 1200
+    config FLIPDOT_DEFAULT_CLEARTIME
+        int "Clear cycle duration in microseconds"
+        default 1200
+
+    menu "Panel layout configuration"
+        config FLIPDOT_PANEL_COUNT
+            int "Number of attached panels"
+            default 5
+            range 0 6
+        config FLIPDOT_PANEL0_WIDTH
+            int "Panel's 0 width"
+            default 25
+    
+        config FLIPDOT_PANEL1_WIDTH
+            int "Panel's 1 width"
+            default 25
+    
+        config FLIPDOT_PANEL2_WIDTH
+            int "Panel's 2 width"
+            default 20
+    
+        config FLIPDOT_PANEL3_WIDTH
+            int "Panel's 3 width"
+            default 20
+    
+        config FLIPDOT_PANEL4_WIDTH
+            int "Panel's 4 width"
+            default 25
+
+        config FLIPDOT_PANEL5_WIDTH
+            int "Panel's 5 width"
+            default 0
+
+    endmenu
+endmenu

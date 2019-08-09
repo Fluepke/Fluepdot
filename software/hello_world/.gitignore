@@ -1,0 +1,44 @@
+
+# Created by https://www.gitignore.io/api/cmake
+# Edit at https://www.gitignore.io/?templates=cmake
+
+### CMake ###
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+### CMake Patch ###
+# External projects
+*-prefix/
+
+# End of https://www.gitignore.io/api/cmake
+
+.bin_timestamp
+config.env
+esp-idf/
+config/
+sdkconfig
+sdkconfig.old
+build/
+partition_table/
+project_description.json
+flash_app_args
+flash_bootloader_args
+flash_partition_table_args
+flash_project_args
+flasher_args.json
+project_elf_src.c
+*.bin
+*.elf
+*.map
+ldgen_libraries
+ldgen_libraries.in
+kconfig_bin

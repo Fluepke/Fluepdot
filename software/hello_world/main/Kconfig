@@ -1,0 +1,6 @@
+menu "Flipdot 'hello world'"
+    config WLAN_SSID
+        string "The wireless LAN SSID to connect to"
+    config WLAN_PSK
+        string "The wireless LAN pre shared key. Leave blank for none."
+endmenu
