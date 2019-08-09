@@ -1,8 +1,6 @@
 # Fluepdot
 > **Beware**: This is a work in progress. PCBs are known to contain bugs(!), but however - are still working. Please see [issues](https://gitlab.com/fluepke/fluepdot/issues)
 
-![Logo](./artwork/logo.svg)
-
 Project for having fun with Annax flipdot displays.
 
 ## Overview
