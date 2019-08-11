@@ -14,7 +14,7 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text HLabel 2950 5350 0    50   BiDi ~ 10
+Text HLabel 3000 5450 0    50   BiDi ~ 10
 D-
 Text HLabel 4950 4650 2    50   Input ~ 10
 RX
@@ -68,7 +68,7 @@ F 4 "SML-211YTT86" H 4550 5550 50  0001 C CNN "Octopart"
 	1    4550 5550
 	1    0    0    -1  
 $EndComp
-Text HLabel 2950 5450 0    50   BiDi ~ 10
+Text HLabel 3000 5350 0    50   BiDi ~ 10
 D+
 $Comp
 L Interface_USB:CP2102N-A01-GQFN24 U3
@@ -82,10 +82,6 @@ F 4 "CP2102N-A01-GQFN24" H 3650 4950 50  0001 C CNN "Octopart"
 	1    3650 4950
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	2950 5350 3050 5350
-Wire Wire Line
-	2950 5450 3050 5450
 Text HLabel 2850 4950 0    50   Input ~ 10
 VUSB
 Wire Wire Line
@@ -413,4 +409,8 @@ NoConn ~ 4250 5250
 NoConn ~ 4250 5350
 NoConn ~ 3050 4650
 NoConn ~ 3050 4750
+Wire Wire Line
+	3000 5350 3050 5350
+Wire Wire Line
+	3000 5450 3050 5450
 $EndSCHEMATC
