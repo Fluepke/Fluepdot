@@ -9,7 +9,7 @@ static const char* FLIPDOT_TAG = "flipdot";
 
 #define FLIPDOT_CHECK(a, str, ret_val, ...) \
     if (!(a)) { \
-        ESP_LOGV(FLIPDOT_TAG,"%s(%d): "str, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
+        ESP_LOGE(FLIPDOT_TAG,"%s(%d): "str, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
         return (ret_val); \
     }
 
@@ -36,7 +36,6 @@ esp_err_t flipdot_init(flipdot_t** flipdot_handle) {
     flipdot_t *flipdot = malloc(sizeof(flipdot_t));
     if (flipdot == NULL) { return ESP_ERR_NO_MEM; }
     memset(flipdot, 0, sizeof(flipdot_t));
-    *flipdot_handle = flipdot;
 
     flipdot->panel_count = FLIPDOT_PANEL_COUNT;
     flipdot->panel_widths[0] = PANEL0_WIDTH;
@@ -49,14 +48,14 @@ esp_err_t flipdot_init(flipdot_t** flipdot_handle) {
     FLIPDOT_ERROR_CHECK(flipdot_init_spi(flipdot));
 
     FLIPDOT_ERROR_CHECK(flipdot_init_gpio(flipdot));
-    
+
     flipdot->io_state.reset_signal = 1;
-	FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
+	  FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
     vTaskDelay(1);
 
     FLIPDOT_ERROR_CHECK(gpio_set_level(FLIPDOT_OE_PIN, 0))
     FLIPDOT_ERROR_CHECK(gpio_set_level(FLIPDOT_SRCLR_PIN, 1))
-    ESP_LOGI(FLIPDOT_TAG, "Flipdot initialized.");
+    *flipdot_handle = flipdot;
 
     return ESP_OK;
 }
@@ -132,7 +131,7 @@ esp_err_t flipdot_write_registers(flipdot_t* flipdot) {
     spi_transaction.length = 32;
     // use QH' for controlling up to six panels
     spi_transaction.tx_data[0] = (flipdot->io_state.panel_select & (1 << 5)) >> 5;
-    spi_transaction.tx_data[1] = 
+    spi_transaction.tx_data[1] =
     	(~((1 << flipdot->io_state.panel_select) >> 1) & 0b11111) |
     	(flipdot->io_state.clock_signal ? 0 : 1) << 5 |
     	(flipdot->io_state.reset_signal ? 0 : 1) << 6 |
@@ -151,8 +150,9 @@ esp_err_t flipdot_write_registers(flipdot_t* flipdot) {
 
 esp_err_t flipdot_render(flipdot_t* flipdot, uint16_t* framebuffer, rendering_options_t* rendering_options) {
     FLIPDOT_CHECK(flipdot->power_status, "Try turning it on first!", ESP_ERR_INVALID_STATE);
-    ESP_LOGV(FLIPDOT_TAG, "Rendering a frame ...");
+    ESP_LOGI(FLIPDOT_TAG, "Rendering a frame %d ...", flipdot->panel_count);
     for (int i=0; i<flipdot->panel_count; i++) {
+        ESP_LOGI(FLIPDOT_TAG, "fooo");
         FLIPDOT_ERROR_CHECK(flipdot_render_panel(flipdot, i, framebuffer, rendering_options));
     }
 
@@ -162,13 +162,13 @@ esp_err_t flipdot_render(flipdot_t* flipdot, uint16_t* framebuffer, rendering_op
 esp_err_t flipdot_render_panel(
         flipdot_t* flipdot, uint8_t panel, uint16_t* framebuffer, rendering_options_t* rendering_options)
 {
-    FLIPDOT_CHECK(flipdot->power_status, "Try turning it on first!", ESP_ERR_INVALID_STATE);
+    // FLIPDOT_CHECK(flipdot->power_status, "Try turning it on first!", ESP_ERR_INVALID_STATE);
     int offset = 0;
     for (int i=0; i<panel; i++) {
         offset += flipdot->panel_widths[i];
     }
 
-    ESP_LOGV(FLIPDOT_TAG, "Rendering to panel %d, offset (%d)", panel, offset);
+    ESP_LOGI(FLIPDOT_TAG, "Rendering to panel %d, offset (%d)", panel, offset);
     ESP_LOGV(FLIPDOT_TAG, "| 01234567 01234567 | clear | render |");
     FLIPDOT_ERROR_CHECK(flipdot_select_panel(flipdot, panel));
     for (int i=0; i<flipdot->panel_widths[panel]; i++) {

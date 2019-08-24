@@ -90,6 +90,7 @@ static void udp_server_task(void *pvParameters)
     flipdot_t* flipdot;
     rendering_options_t* rendering_options;
     ESP_ERROR_CHECK(flipdot_init(&flipdot));
+    ESP_LOGI(TAG, "This flipdot has %d panels %d", flipdot->panel_count, FLIPDOT_PANEL_COUNT);
     ESP_ERROR_CHECK(flipdot_get_default_rendering_options(&rendering_options));
     ESP_ERROR_CHECK(flipdot_set_power(flipdot, true));
 
@@ -145,6 +146,7 @@ static void udp_server_task(void *pvParameters)
                     memcpy(framebuffer, rx_buffer, FLIPDOT_MAX_WIDTH * 2);
                     flipdot_render(flipdot, framebuffer, rendering_options);
                 } else {
+		    ESP_LOGE(TAG, "Expected %d bytes", FLIPDOT_MAX_WIDTH * 2);
                     err = sendto(sock, fail_msg, strlen(fail_msg), 0, (struct sockaddr *)&source_addr, sizeof(source_addr));
                 }
                 if (err < 0) {

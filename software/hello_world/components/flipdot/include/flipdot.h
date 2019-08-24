@@ -11,7 +11,7 @@
 #define FLIPDOT_SRCLR_PIN 18
 #define FLIPDOT_OE_PIN 15
 
-#define FLIPDOT_MAX_PANEL_COUNT 5
+#define FLIPDOT_MAX_PANEL_COUNT 6
 #define FLIPDOT_PANEL_COUNT CONFIG_FLIPDOT_PANEL_COUNT
 #define PANEL0_WIDTH CONFIG_FLIPDOT_PANEL0_WIDTH
 #define PANEL1_WIDTH CONFIG_FLIPDOT_PANEL1_WIDTH
@@ -69,7 +69,7 @@ typedef struct {
 /**
  * @brief Initializes flipdot
  * Initializes the flipdot data structure, GPIO and SPI.
- * 
+ *
  * @param flipdot Pointer pointer to a flipdot datastructure.
  * @return
  *     - ESP_OK Success
@@ -101,7 +101,7 @@ esp_err_t flipdot_init_gpio(flipdot_t* flipdot);
 
 /**
  * @brief Control flipdot's power supply
- * 
+ *
  * After calling @see flipdot_init one may safely power up the flipdot.
  * DO NOT POWER ON THE FLIPDOT WHILE ONLY POWERSUPPLY IS VBUS OF THE USB INTERFACE!
  * @param flipdot Flipdot handle
@@ -120,7 +120,7 @@ esp_err_t flipdot_set_power(flipdot_t* flipdot, bool power_on);
 esp_err_t flipdot_write_registers(flipdot_t* flipdot);
 
 /**
- * @brief Renders a framebuffer to the flipdot without any special options 
+ * @brief Renders a framebuffer to the flipdot without any special options
  * @param flipdot Flipdot handle
  * @param framebuffer The framebuffer to render
  * @return
@@ -160,7 +160,7 @@ esp_err_t flipdot_select_panel(flipdot_t* flipdot, uint8_t panel);
 
 /**
  * @brief Sets a pixel to the given value in a framebuffer
- * @param x x 
+ * @param x x
  * @param y y
  * @param state The state to set
  * @param framebuffer The framebuffer to manipulate
