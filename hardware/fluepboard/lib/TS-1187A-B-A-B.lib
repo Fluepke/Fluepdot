@@ -1,0 +1,25 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model TS-1187A-B-A-B
+#/2372661/178638/2.43/4/4/Switch
+DEF TS-1187A-B-A-B S 0 30 Y Y 1 F N
+F0 "S" 1050 300 50 H V L CNN
+F1 "TS-1187A-B-A-B" 1050 200 50 H V L CNN
+F2 "TS1187ABAB" 1050 100 50 H I L CNN
+F3 "https://datasheet.lcsc.com/szlcsc/1901111503_XKB-Enterprise-TS-1187A-B-A-B_C318884.pdf" 1050 0 50 H I L CNN
+F4 "Tactile Switches SPST 5.10mm x 5.10mm 0.40mm 50mA @ 12VDC SMD RoHS" 1050 -100 50 H I L CNN "Description"
+F5 "4.05" 1050 -200 50 H I L CNN "Height"
+F6 "C318884" 1050 -300 50 H I L CNN "LCSC Part Number"
+F7 "https://lcsc.com/product-detail/Tactile-Switches_XKB-Enterprise-TS-1187-B-A-A_C318884.html" 1050 -400 50 H I L CNN "LCSC Price/Stock"
+F8 "XKB Enterprise" 1050 -500 50 H I L CNN "Manufacturer_Name"
+F9 "TS-1187A-B-A-B" 1050 -600 50 H I L CNN "Manufacturer_Part_Number"
+DRAW
+X COM_1 A1 0 0 200 R 50 50 0 0 B
+X COM_2 B1 0 -100 200 R 50 50 0 0 B
+X NO_1 C1 1200 0 200 L 50 50 0 0 B
+X NO_2 D1 1200 -100 200 L 50 50 0 0 B
+P 5 0 1 6 200 100 1000 100 1000 -200 200 -200 200 100 N
+ENDDRAW
+ENDDEF
+#
+#End Library
