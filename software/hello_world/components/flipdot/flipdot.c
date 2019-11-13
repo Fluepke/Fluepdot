@@ -93,7 +93,7 @@ esp_err_t flipdot_init_spi(flipdot_t* flipdot) {
         .max_transfer_sz=3
     };
     spi_device_interface_config_t device_config = {
-        .clock_speed_hz=4*1000*1000,
+        .clock_speed_hz=1*1000*1000,  // here
         .mode=0,
         .spics_io_num=0,
         .queue_size=7,
@@ -116,6 +116,8 @@ esp_err_t flipdot_init_gpio(flipdot_t* flipdot) {
         .pull_up_en = 0
     };
     FLIPDOT_ERROR_CHECK(gpio_config(&io_conf))
+    FLIPDOT_ERROR_CHECK(gpio_set_direction(FLIPDOT_SELECT6_PIN, GPIO_MODE_DEF_OUTPUT));
+    FLIPDOT_ERROR_CHECK(gpio_set_level(FLIPDOT_SELECT6_PIN, true));
     ESP_LOGI(FLIPDOT_TAG, "GPIO initialized.");
     return ESP_OK;
 }
@@ -123,6 +125,7 @@ esp_err_t flipdot_init_gpio(flipdot_t* flipdot) {
 esp_err_t flipdot_write_registers(flipdot_t* flipdot) {
     // clear shift register
     FLIPDOT_ERROR_CHECK(gpio_set_level(FLIPDOT_SRCLR_PIN, 0));
+    ets_delay_us(100);
     FLIPDOT_ERROR_CHECK(gpio_set_level(FLIPDOT_SRCLR_PIN, 1));
 
 	spi_transaction_t spi_transaction;
@@ -130,7 +133,8 @@ esp_err_t flipdot_write_registers(flipdot_t* flipdot) {
     spi_transaction.flags = SPI_TRANS_USE_TXDATA;
     spi_transaction.length = 32;
     // use QH' for controlling up to six panels
-    spi_transaction.tx_data[0] = (flipdot->io_state.panel_select & (1 << 5)) >> 5;
+    FLIPDOT_ERROR_CHECK(gpio_set_level(FLIPDOT_SELECT6_PIN, flipdot->io_state.panel_select != 6));
+    spi_transaction.tx_data[0] = flipdot->io_state.panel_select & (1 << 5) ? 1 : 0;
     spi_transaction.tx_data[1] =
     	(~((1 << flipdot->io_state.panel_select) >> 1) & 0b11111) |
     	(flipdot->io_state.clock_signal ? 0 : 1) << 5 |
@@ -156,6 +160,17 @@ esp_err_t flipdot_render(flipdot_t* flipdot, uint16_t* framebuffer, rendering_op
         FLIPDOT_ERROR_CHECK(flipdot_render_panel(flipdot, i, framebuffer, rendering_options));
     }
 
+    return ESP_OK;
+}
+
+esp_err_t flipdot_render_printf(flipdot_t* flipdot, uint16_t* framebuffer) {
+    for (uint8_t y=0; y<15; y++) {
+        for (uint8_t x=0; x<FLIPDOT_MAX_WIDTH; x++) {
+            printf("%c", framebuffer[x] & (1 << y) ? 'X' : ' ');
+        }
+        printf("\n");
+    }
+    printf("\n");
     return ESP_OK;
 }
 

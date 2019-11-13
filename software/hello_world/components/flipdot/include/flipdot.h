@@ -6,10 +6,11 @@
 #define FLIPDOT_PWR_ON 21
 #define FLIPDOT_SPI_MISO 12
 #define FLIPDOT_SPI_MOSI 13
-#define FLIPDOT_SPI_CLK 14
-#define FLIPDOT_RCLK_PIN 19
-#define FLIPDOT_SRCLR_PIN 18
-#define FLIPDOT_OE_PIN 15
+#define FLIPDOT_SPI_CLK 14   // correct
+#define FLIPDOT_RCLK_PIN 19  // correct
+#define FLIPDOT_SRCLR_PIN 18 // correct
+#define FLIPDOT_OE_PIN 15 // correct
+#define FLIPDOT_SELECT6_PIN 23
 
 #define FLIPDOT_MAX_PANEL_COUNT 6
 #define FLIPDOT_PANEL_COUNT CONFIG_FLIPDOT_PANEL_COUNT
@@ -126,6 +127,13 @@ esp_err_t flipdot_write_registers(flipdot_t* flipdot);
  * @return
  */
 esp_err_t flipdot_render(flipdot_t* flipdot, uint16_t* framebuffer, rendering_options_t* rendering_options);
+
+/**
+ * @brief Renders the flipdot's framebuffer to STDOUT
+ * @param flipdot Flipdot handle
+ * @param framebuffer The framebuffer to render
+ */
+esp_err_t flipdot_render_printf(flipdot_t* flipdot, uint16_t* framebuffer);
 
 /**
  * Renders a framebuffer on a previously selected @see flipdot_select_panel panel.
