@@ -3,43 +3,52 @@
 
 static const char* TAG = "flipnet_master";
 
+esp_err_t flipnet_init_master(flipnet_interface_t* interface,
+        flipnet_interface_config_t* interface_config)
+{
+    interface->tx_queue = xQueueCreate(interface_config->tx_queue_size,
+            sizeof(flipnet_frame_t));
+    if (interface->tx_queue == NULL) {
+        ESP_LOGE(TAG, "xQueueCreate failed");
+        return ESP_FAIL;
+    }
+    xTaskCreate(flipnet_tx_task, "flipnet_tx_task", 8192, (void*)interface, 12,
+            &(interface->tx_task));
+    return ESP_OK;
+}
+
 void flipnet_tx_task(void* param) {
     ESP_LOGI(TAG, "tx task started");
     flipnet_interface_t* interface = (flipnet_interface_t*)param;
-    
-    // example frame
     flipnet_frame_t frame;
-    frame.address = 42;
-    frame.command = FRAMEBUFFER;
-    frame.payload_size = 230;
-    uint8_t example_payload[230];
-    uint8_t pattern = 0b10101010;
-    frame.payload = example_payload;
-    uint8_t* buffer;
-
-
+    uint8_t* buffer; 
     for (;;) {
-        pattern = ~pattern;
-        memset(example_payload, pattern, 230);
-        if ((buffer = flipnet_encode_frame(&frame)) == NULL) {
-            ESP_LOGE(TAG, "frame encode failed");
-            vTaskDelete(NULL);
-            return;
+        if (!xQueueReceive(interface->tx_queue, (void*)&frame, (portTickType)portMAX_DELAY)) {
+            continue;
         }
-        ESP_LOGI(TAG, "write payload");
-        flipnet_printf_buffer(buffer, frame.payload_size + 6);
-        if (frame.payload_size + 4 > interface->config->mtu * 2) {
-            ESP_LOGE(TAG, "trying to transmit a frame, that is larger than the MTU!!");
+        if (frame.payload_size + 6 > interface->config->mtu) {
+            ESP_LOGE(TAG, "dropping packet, that is larger than the MTU");
+            interface->tx_drop_count++;
+            free(frame.payload);
+            frame.payload = NULL;
+        }
+        buffer = flipnet_encode_frame(&frame);
+        if (buffer == NULL) {
+            ESP_LOGE(TAG, "flipnet_encode_frame returned a null pointer");
+            interface->tx_drop_count++;
+            free(frame.payload);
+            frame.payload = NULL;
+            continue;
         }
         int len = uart_write_bytes(FLIPNET_UART_NUM, (char*)buffer, frame.payload_size + 6);
-        ESP_LOGI(TAG, "sent %d bytes", len);
-        // wait for transmission to finish
-        ESP_LOGI(TAG, "wait for transmission to finish");
         ESP_ERROR_CHECK(uart_wait_tx_done(FLIPNET_UART_NUM, 1000));
-        ESP_LOGI(TAG, "remaining FIFO %d", UART2.status.txfifo_cnt);
-        ESP_LOGI(TAG, "Transmitted a frame");
-        vTaskDelay(10);
+        ESP_LOGI(TAG, "sent %d bytes", len);
+        interface->tx_count++;
+        free(frame.payload);
+        frame.payload = NULL;
         free(buffer);
+        buffer = NULL;
+        vTaskDelay(1);
     }
 }
 

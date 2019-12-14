@@ -53,8 +53,6 @@ typedef struct {
  * Column rendering options
  */
 typedef struct {
-    bool skip_clear; /*!< Whether to skip the clear cycle */
-    bool skip_column; /*!< Whether to skip rendering the column */
     uint32_t clear_time; /*!< Microseconds of the clear cycle */
     uint32_t on_time; /*!< Microseconds of the rendering cycle */
 } column_rendering_options_t;

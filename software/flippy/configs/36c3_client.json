@@ -1,0 +1,605 @@
+{
+  "kunstwerk": {
+    "enable_curses": true,
+    "interfaces": {
+      "fluepnet0": {
+        "type": "SocketRxInterface",
+        "socket_path": "./fluepnet0.sock",
+        "rx_count": 0
+      },
+      "fluepnet1": {
+        "type": "SocketRxInterface",
+        "socket_path": "./fluepnet1.sock",
+        "rx_count": 0
+      },
+      "fluepnet2": {
+        "type": "SocketRxInterface",
+        "socket_path": "./fluepnet2.sock",
+        "rx_count": 0
+      },
+      "fluepnet3": {
+        "type": "SocketRxInterface",
+        "socket_path": "./fluepnet3.sock",
+        "rx_count": 0
+      }
+    },
+    "fluepdots": {
+      "0": {
+        "x": 0,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "1": {
+        "x": 16,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "2": {
+        "x": 32,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "3": {
+        "x": 48,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "4": {
+        "x": 64,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "5": {
+        "x": 80,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "6": {
+        "x": 96,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "7": {
+        "x": 112,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "8": {
+        "x": 128,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "9": {
+        "x": 144,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "10": {
+        "x": 160,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "11": {
+        "x": 176,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "12": {
+        "x": 192,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "13": {
+        "x": 208,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "14": {
+        "x": 224,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "15": {
+        "x": 240,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "16": {
+        "x": 256,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "17": {
+        "x": 272,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "18": {
+        "x": 288,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "19": {
+        "x": 304,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "20": {
+        "x": 320,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "21": {
+        "x": 336,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "22": {
+        "x": 352,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "23": {
+        "x": 368,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet0"
+      },
+      "24": {
+        "x": 384,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "25": {
+        "x": 400,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "26": {
+        "x": 416,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "27": {
+        "x": 432,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "28": {
+        "x": 448,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "29": {
+        "x": 464,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "30": {
+        "x": 480,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "31": {
+        "x": 496,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "32": {
+        "x": 512,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "33": {
+        "x": 528,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "34": {
+        "x": 544,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "35": {
+        "x": 560,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "36": {
+        "x": 576,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "37": {
+        "x": 592,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "38": {
+        "x": 608,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "39": {
+        "x": 624,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "40": {
+        "x": 640,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "41": {
+        "x": 656,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "42": {
+        "x": 672,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "43": {
+        "x": 688,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "44": {
+        "x": 704,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "45": {
+        "x": 720,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "46": {
+        "x": 736,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "47": {
+        "x": 752,
+        "y": 0,
+        "rotation": 90,
+        "interface": "fluepnet1"
+      },
+      "48": {
+        "x": 0,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "49": {
+        "x": 16,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "50": {
+        "x": 32,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "51": {
+        "x": 48,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "52": {
+        "x": 64,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "53": {
+        "x": 80,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "54": {
+        "x": 96,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "55": {
+        "x": 112,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "56": {
+        "x": 128,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "57": {
+        "x": 144,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "58": {
+        "x": 160,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "59": {
+        "x": 176,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "60": {
+        "x": 192,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "61": {
+        "x": 208,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "62": {
+        "x": 224,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "63": {
+        "x": 240,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "64": {
+        "x": 256,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "65": {
+        "x": 272,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "66": {
+        "x": 288,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "67": {
+        "x": 304,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "68": {
+        "x": 320,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "69": {
+        "x": 336,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "70": {
+        "x": 352,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "71": {
+        "x": 368,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet2"
+      },
+      "72": {
+        "x": 384,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "73": {
+        "x": 400,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "74": {
+        "x": 416,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "75": {
+        "x": 432,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "76": {
+        "x": 448,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "77": {
+        "x": 464,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "78": {
+        "x": 480,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "79": {
+        "x": 496,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "80": {
+        "x": 512,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "81": {
+        "x": 528,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "82": {
+        "x": 544,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "83": {
+        "x": 560,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "84": {
+        "x": 576,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "85": {
+        "x": 592,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "86": {
+        "x": 608,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "87": {
+        "x": 624,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "88": {
+        "x": 640,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "89": {
+        "x": 656,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "90": {
+        "x": 672,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "91": {
+        "x": 688,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "92": {
+        "x": 704,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "93": {
+        "x": 720,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "94": {
+        "x": 736,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      },
+      "95": {
+        "x": 752,
+        "y": 115,
+        "rotation": 90,
+        "interface": "fluepnet3"
+      }
+    }
+  }
+}

@@ -70,8 +70,6 @@ esp_err_t flipdot_get_default_rendering_options(rendering_options_t** rendering_
         options->panel_order[i] = i + 1;
     }
     for (int i=0; i < FLIPDOT_MAX_WIDTH; i++) {
-        options->column_rendering_options[i].skip_clear = false;
-        options->column_rendering_options[i].skip_column = false;
         options->column_rendering_options[i].clear_time = FLIPDOT_CLEAR_TIME;
         options->column_rendering_options[i].on_time = FLIPDOT_ON_TIME;
     }
@@ -154,9 +152,7 @@ esp_err_t flipdot_write_registers(flipdot_t* flipdot) {
 
 esp_err_t flipdot_render(flipdot_t* flipdot, uint16_t* framebuffer, rendering_options_t* rendering_options) {
     FLIPDOT_CHECK(flipdot->power_status, "Try turning it on first!", ESP_ERR_INVALID_STATE);
-    ESP_LOGI(FLIPDOT_TAG, "Rendering a frame %d ...", flipdot->panel_count);
     for (int i=0; i<flipdot->panel_count; i++) {
-        ESP_LOGI(FLIPDOT_TAG, "fooo");
         FLIPDOT_ERROR_CHECK(flipdot_render_panel(flipdot, i, framebuffer, rendering_options));
     }
 
@@ -218,11 +214,9 @@ esp_err_t flipdot_select_panel(flipdot_t* flipdot, uint8_t panel) {
 esp_err_t flipdot_render_column(
         flipdot_t* flipdot, uint16_t column, column_rendering_options_t* column_rendering_options)
 {
-    ESP_LOGV(FLIPDOT_TAG, "| "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" |   %s   |   %s   | %d | %d |",
+    ESP_LOGV(FLIPDOT_TAG, "| "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN" | %d | %d |",
             BYTE_TO_BINARY(column >> 8),
             BYTE_TO_BINARY(column),
-            (column_rendering_options->skip_clear ? "y":"n"),
-            (column_rendering_options->skip_column ? "y":"n"),
             column_rendering_options->clear_time,
             column_rendering_options->on_time);
 
@@ -232,12 +226,12 @@ esp_err_t flipdot_render_column(
     flipdot->io_state.panel_select = 0;
 
     flipdot->io_state.clock_signal = 0;
-    if (!column_rendering_options->skip_clear) {
+    if (column_rendering_options->clear_time > 0) {
         flipdot->io_state.clear_signal = 1;
     }
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
 
-    if (!column_rendering_options->skip_clear) {
+    if (column_rendering_options->clear_time > 0) {
         ets_delay_us(column_rendering_options->clear_time);
         flipdot->io_state.clear_signal = 0;
         flipdot_write_registers(flipdot);
@@ -247,12 +241,12 @@ esp_err_t flipdot_render_column(
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
 
     flipdot->io_state.clock_signal = 0;
-    if (!column_rendering_options->skip_column) {
+    if (column_rendering_options->on_time > 0) {
         flipdot->io_state.column = column;
     }
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
 
-    if (!column_rendering_options->skip_column) {
+    if (column_rendering_options->on_time > 0) {
         ets_delay_us(column_rendering_options->on_time);
         flipdot->io_state.column = 0;
         FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));

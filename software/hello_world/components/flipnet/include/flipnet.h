@@ -39,10 +39,8 @@
 #define FLIPNET_TXD_PIN (23)
 #define FLIPNET_RTS_PIN (25)
 #define FLIPNET_UART_QUEUE_SIZE (20)
-#define FLIPNET_RX_QUEUE_SIZE (3)
 // this is a limitation imposed by the COBS implementation in use
 #define FLIPNET_MAX_MTU (0xFE)
-#define FLIPNET_ESCAPE_CHAR (0x23)
 #define FLIPNET_START_OF_FRAME (0x0)
 #define FLIPNET_START_OF_FRAME_COUNT (1)
 #define FLIPNET_BROADCAST_ADDRESS (0xFF)
@@ -54,26 +52,46 @@
 typedef enum { MASTER, SLAVE } flipnet_mode_t;
 typedef enum {
     /**
-     * Clears the entire display
-     * Supported payloads:
-     * * none: Clears the display with default options
-     * * 1 byte: Clear the display with the given duration per channel
+     * Turn the flipdot on or off
      */
-    CLEAR = 0,
+    POWER = 1,
     /**
      * Transmit a bitmap framebuffer. Expects 230 bytes payload
      * TODO: Explain how the framebuffer works
      */
-    FRAMEBUFFER = 1,
+    FRAMEBUFFER = 2,
     /**
-     * Set rendering options
+     * Render the framebuffer
      */
-    RENDERING_OPTIONS = 2,
+    RENDER = 3,
     /**
-     * Render the contents of the framebuffer
+     * Tell the board how to render the frame
      */
-    RENDER = 3
+    // RENDERING_OPTIONS0 = 4,
+    // RENDERING_OPTIONS1 = 5,
+    /**
+     * How long to power the "clear" line for each column
+     */
+    CLEAR_OPTIONS = 4,
+    /**
+     * How long to power the "y" channels for each column
+     */
+    FLUEP_OPTIONS = 5,
+    /**
+     * Render the text that was provided as payload
+     * Remember to null terminate the string
+     */
+    TEXT = 6,
+    /**
+     * Request the flipdot to load the given font name
+     */
+    LOAD_FONT = 7
 } flipnet_command_t;
+
+typedef struct {
+    size_t p;
+    size_t c;
+} flipnet_cobs_decode_state_t;
 
 /**
  * Interface configuration
@@ -92,6 +110,12 @@ typedef struct {
     uart_port_t uart_port;
     // enable / disable promiscuous mode
     bool promiscuous_mode;
+    // transmit queue size
+    size_t tx_queue_size;
+    // receive queue size
+    size_t rx_queue_size;
+    // if set to true, frames with invalid checksums will be received
+    bool ignore_checksums;
 } flipnet_interface_config_t;
 
 /**
@@ -101,7 +125,10 @@ typedef struct {
     // used internally for handling uart events
     QueueHandle_t uart_event_queue;
     // queue that stores received @see flipnet_frame_t frames
+    // user must ensure to free() frame->payload
     QueueHandle_t rx_queue;
+    // queue thtat stores outgoind @seee flipnet_frame_t frames
+    QueueHandle_t tx_queue;
     // receiver task handle
     TaskHandle_t rx_task;
     // sender task handle
@@ -110,8 +137,30 @@ typedef struct {
     flipnet_interface_config_t* config;
     // received flipnet_frame_t frames
     unsigned long rx_count;
-    // receive errors
+    // total receive errors
     unsigned long rx_drop_count;
+    // uart buffer full errors
+    unsigned long rx_drop_buffer_full;
+    // receive parity erros
+    unsigned long rx_drop_parity;
+    // receive (hw) frame errors
+    unsigned long rx_drop_frame_error;
+    // receive fifo overflows
+    unsigned long rx_drop_fifo_ovf;
+    // packet drops due to queue overflow
+    unsigned long rx_drop_queue_full;
+    // break signals received
+    unsigned long rx_break_count;
+    // transmit count
+    unsigned long tx_count;
+    // transmit errors
+    unsigned long tx_drop_count;
+    // is receiver synchronized with sender?
+    bool synchronized;
+    // internal state machine for decoding frames
+    flipnet_cobs_decode_state_t cobs_state;
+    // buffer for COBS decode
+    uint8_t* cobs_buf;
 } flipnet_interface_t;
 
 /**
