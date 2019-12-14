@@ -6,10 +6,13 @@
 #include "freertos/event_groups.h"
 #include "esp_system.h"
 #include "esp_log.h"
+#include "esp_partition.h"
 #include "nvs_flash.h"
 #include "flipdot.h"
 
 #include "font_rendering.h"
+#include "diagnostics.h"
+#include "ota.h"
 #include "mf_font.h"
 
 #include "flipnet.h"
@@ -19,8 +22,9 @@
 #define STR(x) STR_HELPER(x)
 
 #define FONT_NAME "DejaVuSans16"
-#define FLIPNET_ADDRESS 42
 #define BOOT_MSG "address "STR(FLIPNET_ADDRESS)
+#define CONFIG_PARTITION_TYPE (0x42)
+#define CONFIG_PARTITION_SUBTYPE (0x23)
 
 const char* TAG = "main";
 
@@ -29,32 +33,15 @@ typedef struct {
     flipdot_t* flipdot;
 } receiver_task_param_t;
 
+flipdot_t* flipdot = NULL;
+flipnet_interface_t interface;
 
-/**
- * Simple diagnostics for the flipnet interface
- */
-void interface_diagnostics_task(void* param) {
-    flipnet_interface_t* interface = (flipnet_interface_t*)param;
-    for (;;) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        ESP_LOGI("diagnostics", "interface stats: rx %ld, drop rx %ld\n"
-                "buffer fulls: %ld\n"
-                "parity errors: %ld\n"
-                "frame errors: %ld\n"
-                "fifo overflows: %ld\n"
-                "breaks: %ld\n"
-                "queue fulls: %ld\n",
-                interface->rx_count,
-                interface->rx_drop_count,
-                interface->rx_drop_buffer_full,
-                interface->rx_drop_parity,
-                interface->rx_drop_frame_error,
-                interface->rx_drop_fifo_ovf,
-                interface->rx_break_count,
-                interface->rx_drop_queue_full);
-        ESP_LOGI("diagnostics", "free heap %d", xPortGetFreeHeapSize());
-    }
-}
+typedef struct {
+    uint8_t address;
+    uint32_t baudrate;
+} __attribute__((packed)) system_configuration_t;
+
+system_configuration_t system_configuration;
 
 /**
  * Displays a framebuffer from font rendering lib on flipdot
@@ -74,6 +61,9 @@ void print_buffer_flipdot(state_t* state, flipdot_t* flipdot, rendering_options_
     flipdot_render_printf(flipdot, framebuffer);
 }
 
+uint8_t ota_ssid[32] = {'\0'};
+uint8_t ota_psk[64] = {'\0'};
+char ota_update_url[255] = {'\0'};
 
 /**
  * Simple consumer for frames received via the flipnet interface
@@ -160,27 +150,75 @@ void receiver_task(void* param) {
                 }
                 state.font = font;
                 break;
+             case OTA_WIFI_SSID:
+                ESP_LOGI(TAG, "rcv. cmd: OTA_WIFI_SSID");
+                if (frame.payload_size > 32) {
+                    ESP_LOGE(TAG, "ssid max length 32 chars!");
+                    break;
+                }
+                memcpy(ota_ssid, frame.payload, frame.payload_size);
+                break;
+            case OTA_WIFI_PSK:
+                ESP_LOGI(TAG, "rcv. cmd: OTA_WIFI_PSK");
+                if (frame.payload_size > 64) {
+                    ESP_LOGE(TAG, "max psk length 64 chars!");
+                    break;
+                }
+                memcpy(ota_psk, frame.payload, frame.payload_size);
+                break;
+            case OTA_UPDATE_URL:
+                ESP_LOGI(TAG, "rcv. cmd: OTA_UDPATE_URL");
+                memcpy(ota_update_url, frame.payload, frame.payload_size);
+                break;
+            case OTA_WIFI_CONNECT:
+                ESP_LOGI(TAG, "rcv. cmd: OTA_WIFI_CONNECT");
+                wifi_init_sta(ota_ssid, ota_psk);
+                break;
+            case OTA_UPDATE:
+                ESP_LOGI(TAG, "rcv. cmd: OTA_UPDATE");
+                xTaskCreate(&simple_ota_task, "simple_ota_task", 8192, (void*)ota_update_url, 5, NULL);
+                break;
         }
         free(frame.payload);
     }
 }
 
-flipdot_t* flipdot = NULL;
-flipnet_interface_t interface;
 
 void app_main()
 {
-    ESP_ERROR_CHECK( nvs_flash_init() );
-    printf("Ahoy! My address is %d\n", FLIPNET_ADDRESS);
     printf("I am running version %s\n", GIT_SHA1);
-    
+
+    // initialize NVS
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(err);
+
+    // load configuration from the config partition
+    const esp_partition_t* config_partition = esp_partition_find_first(
+            CONFIG_PARTITION_TYPE,
+            CONFIG_PARTITION_SUBTYPE,
+            "config");
+    if (config_partition == NULL) {
+        ESP_LOGE(TAG, "could not locate configuration partition");
+    }
+    ESP_ERROR_CHECK((config_partition != NULL) ? ESP_OK : ESP_FAIL);
+    ESP_ERROR_CHECK(
+            esp_partition_read(
+                config_partition, 0, (void*)&system_configuration, sizeof(system_configuration_t)));
+
+    ESP_LOGI(TAG, "My address is %d and my baudrate is %d", system_configuration.address,
+            system_configuration.baudrate);
+
     // setup flipnet interface
     flipnet_mode_t mode = SLAVE;
     flipnet_interface_config_t config = {
         .mtu = 250,
-        .address = FLIPNET_ADDRESS,
+        .address = system_configuration.address,
         .mode = mode,
-        .baudrate = 230400,
+        .baudrate = system_configuration.baudrate,
         .promiscuous_mode = false,
         .rx_queue_size = 23,
         .ignore_checksums = false
@@ -215,7 +253,7 @@ void app_main()
     };
 
     xTaskCreate(receiver_task, "receiver_task", 16384, (void*)&params, 12, NULL);
-    xTaskCreate(interface_diagnostics_task, "diagnostics", 2048, (void*)&interface, 6, NULL);
+//    xTaskCreate(interface_diagnostics_task, "diagnostics", 2048, (void*)&interface, 6, NULL);
     for(;;) {
         vTaskDelay(1);
     }

@@ -85,7 +85,27 @@ typedef enum {
     /**
      * Request the flipdot to load the given font name
      */
-    LOAD_FONT = 7
+    LOAD_FONT = 7,
+    /**
+     * Set the SSID to connect to
+     */
+    OTA_WIFI_SSID = 8,
+    /**
+     * Set the PSK of the Wifi to connect to
+     */
+    OTA_WIFI_PSK = 9,
+    /**
+     * Connect to a wifi
+     */
+    OTA_WIFI_CONNECT = 10,
+    /**
+     * Set the URL to retrieve firmware from
+     */
+    OTA_UPDATE_URL = 11,
+    /**
+     * Perform an OTA update
+     */
+    OTA_UPDATE = 12
 } flipnet_command_t;
 
 typedef struct {

@@ -25,7 +25,6 @@ _deps
 config.env
 esp-idf/
 config/
-sdkconfig
 sdkconfig.old
 build/
 partition_table/
