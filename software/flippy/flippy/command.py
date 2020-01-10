@@ -5,7 +5,10 @@ import crcmod
 
 from bitarray import bitdiff
 
-from flippy.payload import CommandPayload, EmptyPayload, Framebuffer, FluepOptions, ClearOptions
+from flippy.payload import (
+        CommandPayload, EmptyPayload, BooleanPayload,
+        Framebuffer, FluepOptions, ClearOptions, StringPayload
+)
 from flippy.constants import LATENCY
 from flippy.fluepdot import Fluepdot
 
@@ -65,12 +68,23 @@ class Command(metaclass=ABCMeta):
         """
         data = bytearray([self.address, self.nr]) + self.payload.serialize()
         crc16 = Command.crc_fun(data)
-        return data + bytearray([crc16 >> 8, crc16 & 0xFF]) 
+        return data + bytearray([crc16 >> 8, crc16 & 0xFF])
 
     @abstractmethod
     def simulate(self, fluepdot: Fluepdot) -> float:
         """Simulate the execution of this command on a fluepdot and return the execution time"""
 
+class PowerCommand(Command):
+    """Tell the fluepdot to turn on / off power supply for the flipdot boards"""
+    nr: int = 1
+
+    @staticmethod
+    def get_payload_type():
+        return BooleanPayload
+
+    def simulate(self, fluepdot: Fluepdot):
+        fluepdot.power_status = bool(self.payload)
+        return LATENCY
 
 class FramebufferCommand(Command):
     """Transmit a 115x16 framebuffer, but do not yet render it"""
@@ -132,6 +146,51 @@ class FluepOptionsCommand(Command):
         fluepdot.fluep_options = self.payload
         return LATENCY
 
+class StringCommand(Command):
+    nr : int = 6
+    @staticmethod
+    def get_payload_type():
+        return StringPayload
+
+    def simulate(self, fluepdot: Fluepdot):
+        return LATENCY
+
+class OtaSsidCommand(StringCommand):
+    """Set the SSID to connect to"""
+    nr: int = 8
+
+class OtaPskCommand(StringCommand):
+    """Set the PSK of the wifi to connect to"""
+    nr: int = 9
+
+class OtaWifiConnectCommand(Command):
+    """Connect to the configured wifi"""
+    nr: int = 10
+
+    @staticmethod
+    def get_payload_type():
+        return EmptyPayload
+
+    def simulate(self, fluepdot: Fluepdot):
+        return LATENCY
+
+class OtaUpdateUrlCommand(StringCommand):
+    """Set the firmware download url"""
+    nr: int = 11
+
+class OtaUpdateCommand(Command):
+    """Perform the OTA update"""
+    nr: int = 12
+
+    @staticmethod
+    def get_payload_type():
+        return EmptyPayload
+
+    def simulate(self, fluepdot: Fluepdot):
+        return LATENCY
+
 class ChecksumError(ValueError):
+    """Checksum does not match"""
+
     def __init__(self, raw_payload):
         super().__init__(f"{raw_payload} has an invalid checksum")
