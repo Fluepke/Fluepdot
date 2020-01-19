@@ -155,6 +155,16 @@ class StringCommand(Command):
     def simulate(self, fluepdot: Fluepdot):
         return LATENCY
 
+
+class FontCommand(Command):
+    nr : int = 7
+    @staticmethod
+    def get_payload_type():
+        return StringPayload
+
+    def simulate(self, fluepdot: Fluepdot):
+        return LATENCY
+
 class OtaSsidCommand(StringCommand):
     """Set the SSID to connect to"""
     nr: int = 8
