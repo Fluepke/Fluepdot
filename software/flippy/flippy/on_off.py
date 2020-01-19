@@ -37,3 +37,7 @@ def cli():
         kunstwerk.execute_command(render_cmd)
     input()
     kunstwerk.down()
+
+if __name__ == "__main__":
+    print("hello")
+    cli()
