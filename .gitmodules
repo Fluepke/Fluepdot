@@ -1,3 +1,0 @@
-[submodule "software/hello_world/components/mcufont"]
-	path = software/hello_world/components/mcufont
-	url = https://github.com/mcufont/mcufont.git
