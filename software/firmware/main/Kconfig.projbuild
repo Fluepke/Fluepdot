@@ -1,0 +1,74 @@
+menu "Flipdot Firmware Defaults"
+    menu "Wireless LAN configuration"
+        choice DEFAULT_SYSTEMCONFIGURATION_WIFI_MODE
+            bool "Wireless LAN operational mode"
+            default DEFAULT_SYSTEMCONFIGURATION_WIFI_MODE_DISABLED
+            help
+                Select a default mode of operation for the WiFi
+            config DEFAULT_SYSTEMCONFIGURATION_WIFI_MODE_DISABLED
+                bool "Disable Wireless LAN"
+            config DEFAULT_SYSTEMCONFIGURATION_WIFI_MODE_AP
+                bool "Operate a Wireless LAN as an access point"
+            config DEFAULT_SYSTEMCONFIGURATION_WIFI_MODE_STATION
+                bool "Connect to an existing Wireless LAN as a station"
+        endchoice
+        config DEFAULT_SYSTEMCONFIGURATION_WIFI_SSID
+            string "The default Wireless LAN SSID to connect to / operate as an access point"
+            default "Fluepdot"
+        config DEFAULT_SYSTEMCONFIGURATION_WIFI_PASSWORD
+            string "The Wireless LAN pre shared key. Leave blank for none."
+            default ""
+    endmenu
+
+    menu "RS485 configuration"
+        choice DEFAULT_SYSTEMCONFIGURATION_RS485_MODE
+            bool "RS485 operational mode"
+            default DEFAULT_SYSTEMCONFIGURATION_RS485_MODE_DISABLED
+            config DEFAULT_SYSTEMCONFIGURATION_RS485_MODE_DISABLED
+                bool "Disable RS485"
+            config DEFAULT_SYSTEMCONFIGURATION_RS485_MODE_FLIPNET
+                bool "Flipnet mode"
+            config DEFAULT_SYSTEMCONFIGURATION_RS485_MODE_DMX
+                bool "DMX mode"
+        endchoice
+        config DEFAULT_SYSTEMCONFIGURATION_RS485_BAUDRATE
+            int "Baudrate"
+            depends on DEFAULT_SYSTEMCONFIGURATION_RS485_MODE_FLIPNET
+        config DEFAULT_SYSTEMCONFIGURATION_RS485_ADDRESS
+            int "Address"
+            range 0 255
+            default 1
+            depends on DEFAULT_SYSTEMCONFIGURATION_RS485_MODE_FLIPNET
+    endmenu
+
+    menu "Flipdot configuration"
+        config DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_COUNT
+            int "Number of panels"
+            range 1 5
+            default 5
+        config DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_SIZE1
+            int "Width of panel 1"
+            range 20 25
+            default 25
+        config DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_SIZE2
+            int "Width of panel 2"
+            range 20 25
+            default 25
+        config DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_SIZE3
+            int "Width of panel 3"
+            range 20 25
+            default 20
+        config DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_SIZE4
+            int "Width of panel 4"
+            range 20 25
+            default 20
+        config DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_SIZE5
+            int "Width of panel 5"
+            range 20 25
+            default 25
+    endmenu
+
+    config DEFAULT_SYSTEMCONFIGURATION_HOSTNAME
+        string "The system's hostname"
+        default "fluepdot.local"
+endmenu

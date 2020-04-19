@@ -1,0 +1,3 @@
+[submodule "software/firmware/components/mcufont/mcufont"]
+	path = software/firmware/components/mcufont/mcufont
+	url = https://github.com/mcufont/mcufont.git

@@ -1,0 +1,260 @@
+FLUEPDOT-MIB DEFINITIONS ::= BEGIN
+
+---
+--- MIB to use for interaction with fluepdots
+---
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, enterprises FROM SNMPv2-SMI
+;
+
+fluepke MODULE-IDENTITY
+    LAST-UPDATED "202004120000Z"
+    ORGANIZATION "fluepke"
+    CONTACT-INFO
+        "Twitter: @fluepke
+         Email: iana@luepke.email
+         Phone: +49 1 5678 57 1337"
+    DESCRIPTION
+        "MIB objects for my projects"
+    REVISION "202004120000Z"
+    DESCRIPTION "Initial release (fluepdot)"
+    ::= { enterprises 54722 }
+
+projects OBJECT IDENTIFIER ::= { fluepke 1 }
+fluepdot OBJECT IDENTIFIER ::= { projects 1 }
+framebuffer OBJECT IDENTIFIER ::= { fluepdot 1 }
+panels OBJECT IDENTIFIER ::= { fluepdot 2 }
+renderingOptions OBJECT IDENTIFIER ::= { fluepdot 3 }
+
+width OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Width of the framebuffer in pixels"
+    ::= { framebuffer 1 }
+
+height OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Height of the framebuffer in pixels"
+    ::= { framebuffer 2 }
+
+pixelsTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF PixelEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+        "Framebuffer pixel values"
+    ::= { framebuffer 3 }
+
+pixelEntry OBJECT-TYPE
+    SYNTAX PixelEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+        "A pixel"
+    INDEX { pixelX, pixelY }
+    ::= { pixelsTable 1}
+
+PixelEntry ::= SEQUENCE {
+    pixelX Integer32,
+    pixelY Integer32,
+    pixelState Integer32
+}
+
+pixelX OBJECT-TYPE
+    SYNTAX Integer32(0..255)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "X value. X=0, Y=0 == bottom left corner"
+    ::= { pixelEntry 1 }
+
+pixelY OBJECT-TYPE
+    SYNTAX Integer32(0..255)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "Y value. X=0, Y=0 == bottom left corner"
+    ::= { pixelEntry 2 }
+
+pixelState OBJECT-TYPE
+    SYNTAX INTEGER {
+            dark(0),
+            bright(1)
+        }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+        "Pixel value"
+    ::= { pixelEntry 3 }
+
+panelCount OBJECT-TYPE
+    SYNTAX Integer32(0..5)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "Number of available panels"
+    ::= { panels 1 }
+
+panelTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF PanelTableEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Available panels"
+    ::= { panels 2 }
+
+panelTableEntry OBJECT-TYPE
+    SYNTAX PanelTableEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Panel table entry"
+    INDEX { panelIndex }
+    ::= { panelTable 1 }
+
+PanelTableEntry ::= SEQUENCE {
+    panelIndex Integer32,
+    panelWidth Integer32,
+    panelX Integer32
+}
+
+panelIndex OBJECT-TYPE
+    SYNTAX Integer32(0..5)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "Panel's index"
+    ::= { panelTableEntry 1 }
+
+panelWidth OBJECT-TYPE
+    SYNTAX Integer32(20..25)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "Panel's width"
+    ::= { panelTableEntry 2 }
+
+panelX OBJECT-TYPE
+    SYNTAX Integer32(0..255)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "Panel's x location"
+    ::= { panelTableEntry 3 }
+
+delayTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF DelayEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+        "Column delay"
+    ::= { renderingOptions 1 }
+
+delayEntry OBJECT-TYPE
+    SYNTAX DelayEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION
+        "A column delay entry"
+    INDEX { column }
+    ::= { delayTable 1 }
+
+DelayEntry ::= SEQUENCE {
+    column Integer32,
+    columnPreDelay Integer32,
+    columnSetDelay Integer32,
+    columnClearDelay Integer32
+}
+
+column OBJECT-TYPE
+    SYNTAX Integer32(0..255)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+        "The column index. Left is 0."
+    ::= { delayEntry 1 }
+
+columnPreDelay OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+        "Pre column delay in microSeconds"
+    ::= { delayEntry 2 }
+
+columnSetDelay OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+        "Set duty cycle in microSeconds"
+    ::= { delayEntry 3 }
+
+columnClearDelay OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+        "Clear duty cycle in microSeconds"
+    ::= { delayEntry 4 }
+
+panelOrderTable OBJECT-TYPE
+    SYNTAX SEQUENCE OF PanelOrderEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Rendering oder"
+    ::= { renderingOptions 2 }
+
+panelOrderEntry OBJECT-TYPE
+    SYNTAX PanelOrderEntry
+    MAX-ACCESS not-accessible
+    STATUS current
+    DESCRIPTION "Rendering order entry"
+    INDEX { orderIndex }
+    ::= { panelOrderTable 1 }
+
+PanelOrderEntry ::= SEQUENCE {
+    orderIndex Integer32,
+    panelOrderIndex Integer32
+}
+
+orderIndex OBJECT-TYPE
+    SYNTAX Integer32(0..5)
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "Defines the index in the panelOrderTable"
+    ::= { panelOrderEntry 1 }
+
+panelOrderIndex OBJECT-TYPE
+    SYNTAX Integer32(0..5)
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION "Defines the panel to render on"
+    ::= { panelOrderEntry 2 }
+
+renderingMode OBJECT-TYPE
+    SYNTAX INTEGER {
+            full(0),
+            differential(1)
+        }
+    MAX-ACCESS read-write
+    STATUS current
+    DESCRIPTION
+        "Fluepdot rendering mode"
+    ::= { renderingOptions 3 }
+
+pixelsFlipped OBJECT-TYPE
+    SYNTAX Counter64
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION "Counts the total pixel state changes"
+    ::= { fluepdot 4 }
+
+dirtyBit OBJECT-TYPE
+    SYNTAX Integer32
+    MAX-ACCESS write-only
+    STATUS current
+    DESCRIPTION "Set to something to make the flipdot render"
+    ::= { fluepdot 69 }
+
+END
