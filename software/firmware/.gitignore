@@ -176,3 +176,10 @@ sdkconfig.old
 flipdot-firmware.bin
 flipdot-firmware.elf
 flipdot-firmware.map
+app-flash_args
+bootloader-flash_args
+flash_args
+flash_args.in
+otadata-flash_args
+partition_table-flash_args
+x509_crt_bundle.S
