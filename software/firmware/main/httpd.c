@@ -162,8 +162,130 @@ static const httpd_uri_t post_pixel = {
     .handler = http_api_pixel_handler,
 };
 
+esp_err_t http_api_get_rendering_mode(httpd_req_t *req) {
+    char response[3] = {};
+    snprintf(response, sizeof(response), "%d\n", flipdot.rendering_options->mode);
+    return httpd_resp_send(req, response, sizeof(response));
+}
+
+static const httpd_uri_t get_rendering_mode = {
+    .uri = "/rendering/mode",
+    .method = HTTP_GET,
+    .handler = http_api_get_rendering_mode,
+};
+
+static esp_err_t http_api_put_rendering_mode(httpd_req_t *req) {
+    size_t received_bytes = 0;
+    char* buf;
+    esp_err_t error = ESP_OK;
+
+    if (req->content_len > 10) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    
+    buf = calloc(req->content_len, sizeof(char));
+
+    if (buf == NULL) {
+        return ESP_ERR_NO_MEM;
+    }
+
+    while (received_bytes < req->content_len) {
+        int ret = httpd_req_recv(req, &buf[received_bytes], req->content_len - received_bytes);
+        if (ret <= 0) {
+            if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+                httpd_resp_send_408(req);
+            }
+
+            error = ESP_FAIL;
+            goto ERROR;
+        }
+        received_bytes += ret;
+    }
+        
+    int rendering_mode = atoi(buf);
+    
+    switch (rendering_mode) {
+        case FULL:
+        case DIFFERENTIAL:
+            flipdot.rendering_options->mode = rendering_mode;
+            break;
+        default:
+            error = ESP_ERR_INVALID_ARG;
+            goto ERROR;
+    }
+
+    return http_api_get_rendering_mode(req);
+
+ERROR:
+    free(buf);
+    return error;
+}
+
+static const httpd_uri_t put_rendering_mode = {
+    .uri = "/rendering/mode",
+    .method = HTTP_PUT,
+    .handler = http_api_put_rendering_mode,
+};
+
+esp_err_t http_api_get_rendering_timings(httpd_req_t *req) {
+    char buf[19];
+
+    for (int x=0; x<flipdot.width; x++) {
+        snprintf(buf,
+                sizeof(buf),
+                "%05d\n%05d\n%05d\n",
+                flipdot.rendering_options->delay_options[x].pre_delay,
+                flipdot.rendering_options->delay_options[x].clear_delay,
+                flipdot.rendering_options->delay_options[x].set_delay);
+        httpd_resp_send_chunk(req, buf, sizeof(buf));
+    }
+    
+    httpd_resp_send_chunk(req, NULL, 0);
+    return ESP_OK;
+}
+
+static const httpd_uri_t get_rendering_timings = {
+    .uri = "/rendering/timings",
+    .method = HTTP_GET,
+    .handler = http_api_get_rendering_timings,
+};
+
+esp_err_t http_api_post_rendering_timings(httpd_req_t *req) {
+    char buf[19];
+
+    for (int x=0; x<flipdot.width; x++) {
+        size_t received = 0;
+        while (received < sizeof(buf)) {
+            int ret = httpd_req_recv(req, &buf[received], sizeof(buf) - received);
+            if (ret <= 0) {
+                if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+                    httpd_resp_send_408(req);
+                }
+                return ESP_FAIL;
+            }
+            received += ret;
+        }
+        if (sscanf(buf, "%05hd\n%05hd\n%05hd",
+                    &(flipdot.rendering_options->delay_options[x].pre_delay),
+                    &(flipdot.rendering_options->delay_options[x].clear_delay),
+                    &(flipdot.rendering_options->delay_options[x].set_delay)) == 0) {
+            return ESP_ERR_INVALID_ARG;
+        }
+    }
+
+    return http_api_get_rendering_timings(req);
+}
+
+static const httpd_uri_t post_rendering_timings = {
+    .uri = "/rendering/timings",
+    .method = HTTP_POST,
+    .handler = http_api_post_rendering_timings,
+};
+
 esp_err_t httpd_initialize(httpd_handle_t server) {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+
+    config.max_uri_handlers = 10;
 
     if (httpd_start(&server, &config) == ESP_OK) {
         ERROR_CHECK(httpd_register_uri_handler(server, &get_framebuffer));
@@ -171,6 +293,10 @@ esp_err_t httpd_initialize(httpd_handle_t server) {
         ERROR_CHECK(httpd_register_uri_handler(server, &get_pixel));
         ERROR_CHECK(httpd_register_uri_handler(server, &delete_pixel));
         ERROR_CHECK(httpd_register_uri_handler(server, &post_pixel));
+        ERROR_CHECK(httpd_register_uri_handler(server, &put_rendering_mode));
+        ERROR_CHECK(httpd_register_uri_handler(server, &get_rendering_mode));
+        ERROR_CHECK(httpd_register_uri_handler(server, &get_rendering_timings));
+        ERROR_CHECK(httpd_register_uri_handler(server, &post_rendering_timings));
     }
 
     return ESP_OK;
