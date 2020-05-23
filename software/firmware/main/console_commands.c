@@ -33,25 +33,6 @@ esp_err_t console_register_reboot(void) {
     return ESP_OK;
 }
 
-static int console_exit(int argc, char **argv) {
-    // TODO anyone knows how to tell `screen` to exit from a serial port?
-    putchar(EOF);
-    return 0;
-}
-
-esp_err_t console_register_exit(void) {
-    const esp_console_cmd_t cmd = {
-        .command = "exit",
-        .help = "Send EOF to exit screen",
-        .hint = NULL,
-        .func = &console_exit,
-    };
-
-    ERROR_CHECK(esp_console_cmd_register(&cmd));
-
-    return ESP_OK;
-}
-
 static int console_show_tasks(int argc, char **argv) {
     /* See vTaskList: "Approximately 40 bytes per task should be sufficient"
        Going for 42, for good luck xD
@@ -208,13 +189,17 @@ static int console_config_wifi_ap(int argc, char **argv) {
     }
 
     system_configuration.wifi.mode = WIFI_AP;
+    size_t ssid_len = strnlen(console_wifi_args.ssid->sval[0], sizeof(system_configuration.wifi.ssid));
+    bzero(system_configuration.wifi.ssid, sizeof(system_configuration.wifi.ssid));
     strncpy(system_configuration.wifi.ssid,
             console_wifi_args.ssid->sval[0],
-            sizeof(system_configuration.wifi.ssid));
+            ssid_len);
+    bzero(system_configuration.wifi.password, sizeof(system_configuration.wifi.password));
     if (console_wifi_args.password->sval[0]) {
+        size_t password_len = strnlen(console_wifi_args.password->sval[0], sizeof(system_configuration.wifi.password));
         strncpy(system_configuration.wifi.password,
                 console_wifi_args.password->sval[0],
-                sizeof(system_configuration.wifi.password));
+                password_len);
     }
 
     return 0;
@@ -246,13 +231,17 @@ static int console_config_wifi_station(int argc, char **argv) {
     }
 
     system_configuration.wifi.mode = WIFI_STATION;
+    size_t ssid_len = strnlen(console_wifi_args.ssid->sval[0], sizeof(system_configuration.wifi.ssid));
+    bzero(system_configuration.wifi.ssid, sizeof(system_configuration.wifi.ssid));
     strncpy(system_configuration.wifi.ssid,
             console_wifi_args.ssid->sval[0],
-            sizeof(system_configuration.wifi.ssid));
+            ssid_len);
+    bzero(system_configuration.wifi.password, sizeof(system_configuration.wifi.password));
     if (console_wifi_args.password->sval[0]) {
+        size_t password_len = strnlen(console_wifi_args.password->sval[0], sizeof(system_configuration.wifi.password));
         strncpy(system_configuration.wifi.password,
                 console_wifi_args.password->sval[0],
-                sizeof(system_configuration.wifi.password));
+                password_len);
     }
 
     return 0;
@@ -287,9 +276,11 @@ static int console_config_hostname(int argc, char **argv) {
         arg_print_errors(stderr, console_hostname_args.end, argv[0]);
         return 1;
     }
+    size_t len = strnlen(console_hostname_args.hostname->sval[0], sizeof(system_configuration.hostname));
+    bzero(system_configuration.hostname, sizeof(system_configuration.hostname));
     strncpy(system_configuration.hostname,
             console_hostname_args.hostname->sval[0],
-            sizeof(system_configuration.hostname));
+            len);
 
     return 0;
 }
@@ -309,4 +300,85 @@ esp_err_t console_register_config_hostname(void) {
     ERROR_CHECK(esp_console_cmd_register(&cmd));
 
     return ESP_OK;
+}
+
+static struct {
+    struct arg_int *panel_sizes;
+    struct arg_end *end;
+} console_config_panel_layout_args;
+
+static int console_config_panel_layout(int argc, char **argv) {
+    int nerrors = arg_parse(argc, argv, (void **) &console_config_panel_layout_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, console_config_panel_layout_args.end, argv[0]);
+    }
+    
+    int panel_count = console_config_panel_layout_args.panel_sizes->count;
+
+    if (panel_count <= 0 || panel_count >= FLIPDOT_MAX_SUPPORTED_PANELS) {
+        printf("Panel count of %d not allowed", panel_count);
+        return -1;
+    }
+    system_configuration.flipdot.panel_count = panel_count;
+    for (int i=0; i<FLIPDOT_MAX_SUPPORTED_PANELS; i++) {
+        if (i < panel_count) {
+            system_configuration.flipdot.panel_size[i] = console_config_panel_layout_args.panel_sizes->ival[i];
+        } else {
+            system_configuration.flipdot.panel_size[i] = 0;
+        }
+    }
+    return 0;
+}
+
+esp_err_t console_register_config_panel_layout(void) {
+    console_config_panel_layout_args.panel_sizes = arg_intn(NULL, NULL, "<panel_size>", 1, FLIPDOT_MAX_SUPPORTED_PANELS, "Panel size");
+    console_config_panel_layout_args.end = arg_end(2);
+
+    const esp_console_cmd_t cmd = {
+        .command = "config_panel_layout",
+        .help = "Configure panel count and sizes",
+        .hint = NULL,
+        .func = &console_config_panel_layout,
+        .argtable = &console_config_panel_layout_args,
+    };
+
+    return esp_console_cmd_register(&cmd);
+}
+
+static struct {
+    struct arg_lit* invert;
+    struct arg_end* end;
+} console_flipdot_clear_args;
+
+
+static int console_flipdot_clear(int argc, char **argv) {
+    int nerrors = arg_parse(argc, argv, (void **) &console_flipdot_clear_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, console_flipdot_clear_args.end, argv[0]);
+        return -1;
+    }
+
+    uint8_t pattern = 0;
+    if (console_flipdot_clear_args.invert->count > 0) {
+        pattern = 0xFF;
+    }
+    memset(flipdot.framebuffer->columns, pattern, 2 * flipdot.width);
+    flipdot_set_dirty_flag(&flipdot);
+
+    return 0;
+}
+
+esp_err_t console_register_flipdot_clear(void) {
+    console_flipdot_clear_args.invert = arg_litn(NULL, "invert", 0, 1, "Set all pixels to white instead of black");
+    console_flipdot_clear_args.end = arg_end(2);
+
+    const esp_console_cmd_t cmd = {
+        .command = "flipdot_clear",
+        .help = "Clear the flipdot",
+        .hint = NULL,
+        .func = &console_flipdot_clear,
+        .argtable = &console_flipdot_clear_args,
+    };
+
+    return esp_console_cmd_register(&cmd);
 }

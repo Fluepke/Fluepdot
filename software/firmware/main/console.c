@@ -24,7 +24,6 @@ esp_err_t console_initialize(system_configuration_t* system_configuration) {
     ERROR_CHECK(register_host_cmd());
     ERROR_CHECK(register_traceroute_cmd());
     ERROR_CHECK(console_register_reboot());
-    ERROR_CHECK(console_register_exit());
     ERROR_CHECK(console_register_show_version());
     ERROR_CHECK(console_register_show_tasks());
     ERROR_CHECK(console_register_config_save());
@@ -34,6 +33,8 @@ esp_err_t console_initialize(system_configuration_t* system_configuration) {
     ERROR_CHECK(console_register_config_wifi_ap());
     ERROR_CHECK(console_register_config_wifi_station());
     ERROR_CHECK(console_register_config_hostname());
+    ERROR_CHECK(console_register_config_panel_layout());
+    ERROR_CHECK(console_register_flipdot_clear());
     ERROR_CHECK(console_register_show_fonts());
     ERROR_CHECK(console_register_render_font());
 
