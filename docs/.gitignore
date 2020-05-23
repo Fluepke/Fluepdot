@@ -1,0 +1,6 @@
+venv/
+xml/
+html/
+man/
+build/
+doxygen-warnings-log.txt

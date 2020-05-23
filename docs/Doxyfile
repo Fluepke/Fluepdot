@@ -1,0 +1,20 @@
+PROJECT_NAME      = "Fluepdot"
+PROJECT_LOGO      = "$(PROJ_PATH)/artwork/logo_small.png"
+XML_OUTPUT        = xml
+INPUT             = \
+    $(PROJ_PATH)/software/firmware/components/flipdot/include
+GENERATE_LATEX    = NO
+GENERATE_MAN      = YES
+GENERATE_RTF      = NO
+CASE_SENSE_NAMES  = NO
+GENERATE_HTML     = YES
+GENERATE_XML      = YES
+RECURSIVE         = YES
+QUIET             = YES
+JAVADOC_AUTOBRIEF = YES
+WARN_IF_UNDOCUMENTED = YES
+WARNINGS          = YES
+WARN_FORMAT       = "$file:$line: $text"
+WARN_LOGFILE      = "doxygen-warnings-log.txt"
+MACRO_EXPANSION   = YES
+PREDEFINED        = __attribute__(x)=
