@@ -120,11 +120,11 @@ void system_configuration_dump(system_configuration_t* system_configuration) {
     printf("hostname='%.32s'\n", system_configuration->hostname);
     printf("WiFi: mode=%d, ssid='%.32s', password='%.64s'\n",
             system_configuration->wifi.mode, system_configuration->wifi.ssid, system_configuration->wifi.password);
-    printf("RS485: mode=%d, address=%d, baudrate=%ld",
+    printf("RS485: mode=%d, address=%d, baudrate=%ld\n",
             system_configuration->rs485.mode, system_configuration->rs485.address, system_configuration->rs485.baudrate);
-    printf("Flipdot: panel_count=%d, panel_size[0]=%d, panel_size[1]=%d, panel_size[2]=%d, panel_size[3]=%d, panel_size[4]=%d\n",
-            system_configuration->flipdot.panel_count,
-            system_configuration->flipdot.panel_size[0], system_configuration->flipdot.panel_size[1],
-            system_configuration->flipdot.panel_size[2], system_configuration->flipdot.panel_size[3],
-            system_configuration->flipdot.panel_size[4]);
+    printf("Flipdot: panel_count=%d", system_configuration->flipdot.panel_count);
+    for (int i=0; i<FLIPDOT_MAX_SUPPORTED_PANELS; i++) {
+        printf(", panel_size[%d] = %d", i, system_configuration->flipdot.panel_size[i]);
+    }
+    printf("\n");
 }
