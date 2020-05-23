@@ -1,3 +1,8 @@
+/**
+  * @file
+  * @brief Flipdot GPIO abstraction
+  */
+
 #pragma once
 
 #include <stdint.h>

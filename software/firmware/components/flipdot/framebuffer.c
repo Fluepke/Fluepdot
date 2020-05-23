@@ -5,28 +5,21 @@
 
 static const char* TAG = "framebuffer.c";
 
-framebuffer_t* flipdot_framebuffer_init(uint8_t width) {
-    framebuffer_t* framebuffer = NULL;
+esp_err_t flipdot_framebuffer_init(framebuffer_t* framebuffer, uint8_t width) {
+    FLIPDOT_ASSERT_NOT_NULL(framebuffer, ESP_ERR_INVALID_ARG);
     if (width == 0) {
         ESP_LOGE(TAG, "Framebuffer must have width > 0");
-        return NULL;
-    }
-
-    framebuffer = calloc(1, sizeof(framebuffer_t));
-    if (framebuffer == NULL) {
-        FLIPDOT_LOGE(TAG, "calloc failed");
-        return NULL;
+        return ESP_ERR_INVALID_ARG;
     }
 
     framebuffer->width = width;
     framebuffer->columns = calloc(width, sizeof(uint16_t));
     if (framebuffer->columns == NULL) {
         FLIPDOT_LOGE(TAG, "calloc failed");
-        free(framebuffer);
-        return NULL;
+        return ESP_ERR_NO_MEM;;
     }
 
-    return framebuffer;
+    return ESP_OK;
 }
 
 void flipdot_framebuffer_clear(framebuffer_t* framebuffer) {

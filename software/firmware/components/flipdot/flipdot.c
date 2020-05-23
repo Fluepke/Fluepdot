@@ -123,18 +123,32 @@ esp_err_t flipdot_initialize(flipdot_t* flipdot, flipdot_configuration_t* flipdo
     error = (flipdot->event_group == NULL) ? ESP_ERR_NO_MEM : ESP_OK;
 
     if (error == ESP_OK) {
-        flipdot->framebuffer = flipdot_framebuffer_init(flipdot->width);
-        error = (flipdot->framebuffer == NULL) ? ESP_ERR_NO_MEM : ESP_OK;
+        flipdot->framebuffer = calloc(1, sizeof(framebuffer_t));
+        if (flipdot->framebuffer == NULL) {
+            ESP_LOGE(TAG, "Failed to allocate memory for framebuffer");
+            error = ESP_ERR_NO_MEM;
+        } else {
+            error = flipdot_framebuffer_init(flipdot->framebuffer, flipdot->width);
+        }
     }
 
     if (error == ESP_OK) {
-        flipdot->framebuffer_internal = flipdot_framebuffer_init(flipdot->width);
-        error = (flipdot->framebuffer_internal == NULL) ? ESP_ERR_NO_MEM : ESP_OK;
+        flipdot->framebuffer_internal = calloc(1, sizeof(framebuffer_t));
+        if (flipdot->framebuffer_internal == NULL) {
+            error = ESP_ERR_NO_MEM;
+        } else {
+            error = flipdot_framebuffer_init(flipdot->framebuffer_internal, flipdot->width);
+        }
     }
    
     if (error == ESP_OK) {
-        flipdot->rendering_options = flipdot_rendering_options_initialize(flipdot->panel_count, flipdot->width);
-        error = (flipdot->rendering_options == NULL) ? ESP_ERR_NO_MEM : ESP_OK;
+        flipdot->rendering_options = calloc(1, sizeof(flipdot_rendering_options_t));
+        if (flipdot->rendering_options == NULL) {
+            ESP_LOGE(TAG, "Failed to allocate memory for rendering options");
+            error = ESP_ERR_NO_MEM;
+        } else {
+            error  = flipdot_rendering_options_initialize(flipdot->rendering_options, flipdot->panel_count, flipdot->width);
+        }
     }
     
     FLIPDOT_ERROR_NO_PREV(error,
@@ -377,7 +391,7 @@ static esp_err_t flipdot_render_column(flipdot_t* flipdot, uint8_t x) {
         &(flipdot->internal_rendering_options->delay_options[x]);
 
     /** PRE CYCLE **/
-    ets_delay_us(((uint32_t)delays->pre_delay) * 10);
+    ets_delay_us(((uint32_t)delays->pre_delay) * 50);
 
     /** CLEAR CYCLE **/
     flipdot->io.clock = 0;
@@ -391,7 +405,7 @@ static esp_err_t flipdot_render_column(flipdot_t* flipdot, uint8_t x) {
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
 
     if (!skip_clear) {
-        ets_delay_us((uint32_t)(delays->clear_delay) * 10);
+        ets_delay_us((uint32_t)(delays->clear_delay) * 50);
         flipdot->io.clear = 0;
         flipdot_write_registers(flipdot);
     } else {
@@ -406,7 +420,7 @@ static esp_err_t flipdot_render_column(flipdot_t* flipdot, uint8_t x) {
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
 
     if (!skip_set) {
-        ets_delay_us((uint32_t)(delays->set_delay) * 10);
+        ets_delay_us((uint32_t)(delays->set_delay) * 50);
     } else {
         ets_delay_us(100);
     }

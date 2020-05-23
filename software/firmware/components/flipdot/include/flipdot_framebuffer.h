@@ -1,3 +1,8 @@
+/**
+  * @file
+  * @brief Framebuffer structs and manipulation methods
+  */
+
 #pragma once
 
 #include <stdbool.h>
@@ -7,17 +12,31 @@
 #define FLIPDOT_PIXEL_SET 'X'
 #define FLIPDOT_PIXEL_CLEAR ' '
 
+/**
+  * A framebuffer with bottom left corner as x=0, y=0.
+  */
 typedef struct {
+    /**
+      * 16 pixels high columns
+      */
     uint16_t* columns;
+    
+    /**
+      * Framebuffer width
+      */
     uint8_t width;
 } framebuffer_t;
 
 
 /**
   * @brief Initialize a framebuffer
-  * @param width Framebuffer width. Must be > 0.
+  * @param framebuffer The framebuffer_t* to initialize
+  * @param width Framebuffer width. Must be > 0
+  * @return
+  *   - `ESP_ERR_INVALID_ARG`: framebuffer was NULL or width was 0
+  *   - `ESP_ERR_NO_MEM`: failed to allocate memory
   */
-framebuffer_t* flipdot_framebuffer_init(uint8_t width);
+esp_err_t flipdot_framebuffer_init(framebuffer_t* framebuffer, uint8_t width);
 
 /**
   * @brief Clear a framebuffer (set all pixels dark)

@@ -6,16 +6,12 @@
 
 static const char* TAG = "rendering_options.c";
 
-flipdot_rendering_options_t* flipdot_rendering_options_initialize(uint8_t panel_count, uint8_t width)
+esp_err_t flipdot_rendering_options_initialize(flipdot_rendering_options_t* rendering_options, uint8_t panel_count, uint8_t width)
 {
-    flipdot_rendering_options_t* rendering_options = NULL;
-    if ((panel_count == 0) || (width == 0)) {
-        return NULL;
-    }
+    FLIPDOT_ASSERT_NOT_NULL(rendering_options, ESP_ERR_INVALID_ARG);
 
-    rendering_options = calloc(1, sizeof(flipdot_rendering_options_t));
-    if (rendering_options == NULL) {
-        return NULL;
+    if ((panel_count == 0) || (width == 0)) {
+        return ESP_ERR_INVALID_ARG;
     }
 
     rendering_options->width = width;
@@ -23,16 +19,14 @@ flipdot_rendering_options_t* flipdot_rendering_options_initialize(uint8_t panel_
 
     rendering_options->delay_options = calloc(width, sizeof(flipdot_rendering_delay_options_t));
     if (rendering_options->delay_options == NULL) {
-        free(rendering_options);
-        return NULL;
+        return ESP_ERR_NO_MEM;
     }
 
     rendering_options->panel_order = calloc(panel_count, sizeof(uint8_t));
     if (rendering_options->panel_order == NULL) {
         free(rendering_options->delay_options);
         rendering_options->delay_options = NULL;
-        free(rendering_options);
-        return NULL;
+        return ESP_ERR_NO_MEM;
     }
 
     for (uint8_t i=0; i<panel_count; i++) {
@@ -45,7 +39,7 @@ flipdot_rendering_options_t* flipdot_rendering_options_initialize(uint8_t panel_
         rendering_options->delay_options[x].clear_delay = FLIPDOT_RENDERING_OPTIONS_CLEAR_DELAY_DEFAULT;
     }
 
-    return rendering_options;
+    return ESP_OK;
 }
 
 esp_err_t flipdot_rendering_options_copy(flipdot_rendering_options_t* dest, flipdot_rendering_options_t* src) {

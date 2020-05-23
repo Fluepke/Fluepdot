@@ -1,3 +1,7 @@
+/**
+  * @file
+  * @brief High level flipdot abstraction
+  */
 #pragma once
 
 #include "driver/spi_master.h"
@@ -27,7 +31,13 @@
   * Height is hardcoded to be 16.
   */
 typedef struct {
+    /**
+      * Panel width
+      */
     uint8_t width;
+    /**
+      * Panel offset
+      */
     uint8_t x;
 } flipdot_panel_t;
 
@@ -37,109 +47,122 @@ typedef struct {
   */
 typedef struct {
     /**
-      * Used for inter task communication by the @see task.
+      * Used for inter task communication with the flipdot task
       */
     EventGroupHandle_t event_group;
 
     /**
       * @brief Flipdot rendering task
-      * Performs the following action, once the framebuffer dirty bit was set on the @see event_group:
-      * * Delete @see framebuffer_internal_old
-      * * Copy @see framebuffer_internal to @see framebuffer_internal_old
-      * * Delete @see framebuffer_internal
-      * * Copy @see framebuffer to @see framebuffer_internal
-      * * Delete @see internal_rendering_options
-      * * Copy @see rendering_options to internal_rendering_options
-      * * Render the flipdot as configured.
+      * Performs the following actions, when `FLIPDOT_FRAMEBUFFER_DIRTY_BIT` in `event_group` was set:
+      * * Delete `framebuffer_internal_old`
+      * * Copy `framebuffer_internal` to `framebuffer_internal_old`
+      * * Delete `framebuffer_internal`
+      * * Copy `framebuffer` to `framebuffer_internal`
+      * * Delete `internal_rendering_options`
+      * * Copy `rendering_options` to `internal_rendering_options`
+      * * Render the flipdot as configured
       */
     TaskHandle_t* task;
 
     /**
-      * @brief Framebuffer
       * You can manipulate this framebuffer as you please.
-      * Once done, call @see flipdot_set_dirty_flag
+      * Once done, call `flipdot_set_dirty_flag`
+      * @see flipdot_set_dirty_flag
       */
     framebuffer_t* framebuffer;
 
     /**
-      * @brief Internal framebuffer
-      * Used internally to avoid race conditions when rendering.
+      * Internal framebuffer, used to avoid race conditions when rendering.
       */
     framebuffer_t* framebuffer_internal;
 
     /**
-      * @brief Previous internal framebuffer
-      * Used for differential rendering
+      * Previous internal framebuffer, used for differential rendering
       */
     framebuffer_t* framebuffer_internal_old;
 
     /**
-      * @brief Panel configuration
+      * Panel configuration
       */
     flipdot_panel_t* panels;
 
     /**
-      * @brief Number of attached panels
+      * Number of attached panels
       */
     uint8_t panel_count;
 
     /**
-      * @brief Total flipdot width in pixels
+      * Total flipdot width in pixels
       */
     uint8_t width;
     
     /**
-      * @brief Rendering options
+      * Rendering options
       */
     flipdot_rendering_options_t* rendering_options;
 
     /**
-      * @brief Internal rendering options
-      * Used internally to avoid race conditions when rendering.
+      * Internal rendering options, used internally to avoid race conditions when rendering.
       */
     flipdot_rendering_options_t* internal_rendering_options;
 
     /**
-      * @brief Flipdot power supply status
-      * @note Use @see flipdot_set_power to manipulate this member
+      * Flipdot power status
+      * @note Use `flipdot_set_power` to manipulate this member
+      * @see flipdot_set_power
       */
     bool power_status;
 
     /**
-      * @brief SPI device handle
-      * SPI is used for controlling shift registers IC5, IC6 and IC7.
+      * SPI device handle
+      * @note SPI is used for controlling shift registers IC5, IC6 and IC7.
       */
     spi_device_handle_t spi_device_handle;
 
     /**
-      * @brief Flipdot GPIO state
+      * Flipdot GPIO state, used for shifting out IO states via SPI to IC5, IC6 and IC7.
       */
     flipdot_io_state_t io;
 
     /**
-      * @brief Counts the pixels that changed their value since startup
+      * Counts the pixels that changed their color since startup
       */
     unsigned long long pixels_flipped;
 
     /**
-      * @brief Used for mutual exclusive hardware access
+      * Used for mutual exclusive hardware access
       */
     SemaphoreHandle_t semaphore;
 } flipdot_t;
 
 /**
-  * flipdot_configuration_t is used to initialize a flipdot
+  * Used to initialize a flipdot
+  * @see flipdot_initialize
   */
 typedef struct {
+    /**
+      * Number of attached panels
+      */
     uint8_t panel_count;
+    /**
+      * Width of the attached panels
+      */
     uint8_t panel_size[FLIPDOT_MAX_SUPPORTED_PANELS];
 } __attribute__((packed)) flipdot_configuration_t;
 
 
 /**
-  * @brief Initializes a flipdot for use and starts the @see flipdot.task
-  * Initializes required internal data structures.
-  * @note To actually use the flipdot you have to power it up using @flipdot_set_power
+  * @brief Initializes a flipdot for use and starts the flipdot task
+  *
+  * @note To actually use the flipdot you have to power it up using flipdot_set_power.
+  * @param flipdot Flipdot to initialize, must not be NULL
+  * @param flipdot_configuration Configuration to apply, must not be NULL
+  * @see flipdot_set_power
+  * @return
+  *   - `ESP_OK`: success
+  *   - `ESP_ERR_INVALID_ARG`: invalid arguments (i.e. null pointers)
+  *   - `ESP_ERR_NO_MEM`: allocating internal buffers failed
+  *   - other: failure
   */
 esp_err_t flipdot_initialize(flipdot_t* flipdot, flipdot_configuration_t* flipdot_configuration);
 
@@ -160,10 +183,9 @@ esp_err_t flipdot_set_power(flipdot_t* flipdot, bool power_status);
   * @brief Returns if the flipdot is powered on
   * @param flipdot The flipdot handle
   */
-bool flipdot_get_power(flipdot_t*);
+bool flipdot_get_power(flipdot_t* flipdot);
 
 /**
-  * @brief Marks the flipdot to be dirty
-  * The @see flipdot.task is notified to render the flipdot
+  * Notfies the flipdot task, that the framebuffer is dirty and needs redrawing
   */
 esp_err_t flipdot_set_dirty_flag(flipdot_t* flipdot);
