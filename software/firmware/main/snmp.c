@@ -18,7 +18,7 @@ u16_t SNMP_SYSNAME_LEN = sizeof("ESP32_Core_board_V2");
 u8_t * SNMP_SYSLOCATION = (u8_t*) "Your Institute or Company";
 u16_t SNMP_SYSLOCATION_LEN = sizeof("Your Institute or Company");
 
-static const struct snmp_mib* my_mibs[] = { &fluepke };
+static const struct snmp_mib* my_mibs[] = { &mib2, &fluepke };
 
 esp_err_t snmp_initialize(void) {
     snmp_mib2_set_syscontact(SNMP_SYSCONTACT, &SNMP_SYSCONTACT_LEN, 0);
