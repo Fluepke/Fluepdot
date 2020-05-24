@@ -12,7 +12,8 @@ RUN pip install -r /tmp/requirements.txt
 USER esp
 RUN git clone https://github.com/espressif/crosstool-NG.git /esp/crosstool-NG && git -C /esp/crosstool-NG checkout esp-2020r1 && git -C /esp/crosstool-NG submodule update --init
 RUN sed -i 's/--enable-newlib-long-time_t //g' /esp/crosstool-NG/samples/xtensa-esp32-elf/crosstool.config
-RUN cd /esp/crosstool-NG && ./bootstrap && ./configure --enable-local --enable-newlib-long-time_t && make
-RUN cd /esp/crosstool-NG && CT_ALLOW_BUILD_AS_ROOT=y ./ct-ng xtensa-esp32-elf && CT_ALLOW_BUILD_AS_ROOT=y ./ct-ng build
+WORKDIR /esp/crosstool-NG
+RUN ./bootstrap && ./configure --enable-local && make -j
+RUN ./ct-ng xtensa-esp32-elf && ./ct-ng build -j
 RUN chmod -R u+w /esp/crosstool-NG/builds/xtensa-esp32-elf
 ENV PATH="/esp/crosstool-NG/builds/xtensa-esp32-elf/bin/:${PATH}"

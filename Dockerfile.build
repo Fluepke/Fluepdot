@@ -1,4 +1,4 @@
-FROM fluepke/fluepdot-esp-idf
+FROM fluepke/fluepdot-build-environment
 COPY --chown=esp:esp ./ /fluepdot
 ENV PROJ_PATH=/fluepdot
 WORKDIR /fluepdot/software/firmware/components/mcufont/mcufont
