@@ -58,6 +58,7 @@ Features:
    :caption: DEVELOPER ZONE
    :maxdepth: 2
 
+   compiling
    flipdot_library
 
 .. _BVG: https://www.bvg.de/en
