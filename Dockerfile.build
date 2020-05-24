@@ -1,0 +1,13 @@
+FROM fluepke/fluepdot-esp-idf
+COPY --chown=esp:esp ./ /fluepdot
+ENV PROJ_PATH=/fluepdot
+WORKDIR /fluepdot/software/firmware/components/mcufont/mcufont
+RUN make -j -C encoder mcufont
+RUN make -j -C fonts
+WORKDIR /fluepdot/software/firmware
+RUN cmake . && make -j
+WORKDIR /fluepdot/docs
+RUN make -j
+WORKDIR /fluepdot
+ENTRYPOINT ["python", "-m", "http.server", "--directory", "/fluepdot/docs/build/html/", "8080"]
+EXPOSE 8080/tcp
