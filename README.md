@@ -1,5 +1,5 @@
 # Fluepdot
-[![Documentation Status](https://readthedocs.org/projects/fluepdot/badge/?version=latest)](https://fluepdot.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/fluepdot/badge/?version=latest)](https://fluepdot.readthedocs.io/en/latest/?badge=latest) [![CI Status](https://gitlab.com/fluepke/fluepdot/badges/master/pipeline.svg)](https://gitlab.com/fluepke/fluepdot/pipelines)
 
 `Fluepdot` is a hardware and C project for controlling flip disc panels which where in use by the Berlin public transport operator [BVG](https://www.bvg.de/en).
 
