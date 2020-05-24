@@ -1,6 +1,6 @@
 FROM archlinux:20200505
 RUN pacman -Syu --noconfirm --needed gcc git make ncurses flex bison gperf python-pyserial python-click python-cryptography python-future python-pyparsing python-pyelftools cmake ninja ccache dfu-util \ 
-    gawk gperf grep gettext ncurses python2 python2-pip python-pip automake bison flex texinfo help2man libtool make autoconf unzip which patch doxygen
+    gawk gperf grep gettext ncurses python2 python2-pip python-pip automake bison flex texinfo help2man libtool make autoconf unzip which patch doxygen cxxtest pkgconf
 RUN mkdir /esp
 RUN git clone -b fluepke/snmp --recursive https://github.com/Fluepke/esp-idf.git /esp/esp-idf
 ENV IDF_PATH="/esp/esp-idf"
