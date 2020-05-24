@@ -28,8 +28,76 @@ Tree
 
    snmptranslate -m ./util/FLUEPDOT.mib -Tp .1.3.6.1.4.1.54722
 
-.. runcmd:: snmptranslate -m ../util/FLUEPDOT.mib -Tp .1.3.6.1.4.1.54722
-   :syntax: bash
+.. code:: bash
+
+   +--fluepke(54722)
+   |
+   +--projects(1)
+      |
+      +--fluepdot(1)
+         |
+         +--framebuffer(1)
+         |  |
+         |  +-- -R-- Integer32 width(1)
+         |  +-- -R-- Integer32 height(2)
+         |  |
+         |  +--pixelsTable(3)
+         |     |
+         |     +--pixelEntry(1)
+         |        |  Index: pixelX, pixelY
+         |        |
+         |        +-- -R-- Integer32 pixelX(1)
+         |        |        Range: 0..255
+         |        +-- -R-- Integer32 pixelY(2)
+         |        |        Range: 0..255
+         |        +-- -RW- EnumVal   pixelState(3)
+         |                 Values: dark(0), bright(1)
+         |
+         +--panels(2)
+         |  |
+         |  +-- -R-- Integer32 panelCount(1)
+         |  |        Range: 0..5
+         |  |
+         |  +--panelTable(2)
+         |     |
+         |     +--panelTableEntry(1)
+         |        |  Index: panelIndex
+         |        |
+         |        +-- -R-- Integer32 panelIndex(1)
+         |        |        Range: 0..5
+         |        +-- -R-- Integer32 panelWidth(2)
+         |        |        Range: 20..25
+         |        +-- -R-- Integer32 panelX(3)
+         |                 Range: 0..255
+         |
+         +--renderingOptions(3)
+         |  |
+         |  +--delayTable(1)
+         |  |  |
+         |  |  +--delayEntry(1)
+         |  |     |  Index: column
+         |  |     |
+         |  |     +-- -R-- Integer32 column(1)
+         |  |     |        Range: 0..255
+         |  |     +-- -RW- Integer32 columnPreDelay(2)
+         |  |     +-- -RW- Integer32 columnSetDelay(3)
+         |  |     +-- -RW- Integer32 columnClearDelay(4)
+         |  |
+         |  +--panelOrderTable(2)
+         |  |  |
+         |  |  +--panelOrderEntry(1)
+         |  |     |  Index: orderIndex
+         |  |     |
+         |  |     +-- -R-- Integer32 orderIndex(1)
+         |  |     |        Range: 0..5
+         |  |     +-- -RW- Integer32 panelOrderIndex(2)
+         |  |              Range: 0..5
+         |  |
+         |  +-- -RW- EnumVal   renderingMode(3)
+         |           Values: full(0), differential(1)
+         |
+         +-- -R-- Counter64 pixelsFlipped(4)
+         +-- --W- Integer32 dirtyBit(69)
 
 Usage examples
 --------------
