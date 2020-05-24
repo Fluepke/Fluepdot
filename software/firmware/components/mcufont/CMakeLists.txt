@@ -15,7 +15,6 @@ set(SRCS
 set(INCLUDE_DIRS
 	"${DECODER_DIR}"
 	"${FONTS_DIR}"
-    "include"
 )
 
 idf_component_register(
