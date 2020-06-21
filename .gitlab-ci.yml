@@ -38,8 +38,8 @@ build_esp32_image:
       - $CI_PROJECT_DIR/software/firmware/bootloader/bootloader.bin
       - $CI_PROJECT_DIR/software/firmware/flipdot-firmware.bin
 
-build_service_util:
-  stage: build
+build_service_utility:
+  stage: build_service_utility
   tags:
     - docker
   script:
