@@ -49,37 +49,37 @@ void app_main() {
     ESP_LOGI(TAG, "System configuration loaded");
 
     // initialize wireless connections
-    ESP_ERROR_CHECK(wifi_initialize(&wifi, &system_configuration.wifi, system_configuration.hostname));
+    ERROR_SHOW(wifi_initialize(&wifi, &system_configuration.wifi, system_configuration.hostname));
     ESP_LOGI(TAG, "WiFi initialized");
 
     // initialize mDNS
-    ESP_ERROR_CHECK(mdns_initialize(system_configuration.hostname));
+    ERROR_SHOW(mdns_initialize(system_configuration.hostname));
     ESP_LOGI(TAG, "mDNS initialized");
 
     // initialize Bluetooth LE
-    ESP_ERROR_CHECK(bluetooth_initialize());
+    ERROR_SHOW(bluetooth_initialize());
     ESP_LOGI(TAG, "Bluetooth initialized");
 
     // TODO initialize wired connections
 
     // initialize the flipdot
-    ESP_ERROR_CHECK(flipdot_initialize(&flipdot, &system_configuration.flipdot));
+    ERROR_SHOW(flipdot_initialize(&flipdot, &system_configuration.flipdot));
     ESP_LOGI(TAG, "Flipdot initialized");
 
     // power on the flipdot
-    ESP_ERROR_CHECK(flipdot_set_power(&flipdot, true));
+    ERROR_SHOW(flipdot_set_power(&flipdot, true));
     ESP_LOGI(TAG, "Flipdot powered up");
 
     // initialize the webserver
-    ESP_ERROR_CHECK(httpd_initialize(httpd_server));
+    ERROR_SHOW(httpd_initialize(httpd_server));
     ESP_LOGI(TAG, "httpd initialized");
 
     // initialize the SNMP agent
-    ESP_ERROR_CHECK(snmp_initialize());
+    ERROR_SHOW(snmp_initialize());
     ESP_LOGI(TAG, "snmp initialized");
 
     // intialize the interactive console
-    ESP_ERROR_CHECK(console_initialize(&system_configuration));
+    ERROR_SHOW(console_initialize(&system_configuration));
     ESP_LOGI(TAG, "console initialized");
 
     while (true) {
