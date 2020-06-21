@@ -1,13 +1,23 @@
-FROM fluepke/fluepdot-build-environment
+FROM fluepke/fluepdot-build-environment:latest
 COPY --chown=esp:esp ./ /fluepdot
+
+# build the esp32 firmware
 ENV PROJ_PATH=/fluepdot
 WORKDIR /fluepdot/software/firmware/components/mcufont/mcufont
 RUN make -j -C encoder mcufont
 RUN make -j -C fonts
 WORKDIR /fluepdot/software/firmware
-RUN cmake . && make -j
+RUN cmake . && make all -j
+
+# build the service utility
+RUN go get -u github.com/a-urth/go-bindata/...
+RUN go get github.com/fluepke/esptool
+RUN cd /fluepdot/software/service_utility && /esp/go/bin/go-bindata -o binary.go ../firmware/partition_table/partition-table.bin ../firmware/bootloader/bootloader.bin ../firmware/flipdot-firmware.bin && go build
+
+# generate documentation
 WORKDIR /fluepdot/docs
 RUN make -j
+
 WORKDIR /fluepdot
 ENTRYPOINT ["python", "-m", "http.server", "--directory", "/fluepdot/docs/build/html/", "8080"]
 EXPOSE 8080/tcp

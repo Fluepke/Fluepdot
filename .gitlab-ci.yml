@@ -7,6 +7,7 @@ variables:
 
 stages:
   - build
+  - build_service_utility
   - docs
 
 create_epub:
@@ -30,10 +31,21 @@ build_esp32_image:
     - make -j -C fonts
     - cd $CI_PROJECT_DIR/software/firmware
     - cmake .
-    - make -j
+    - make all -j
   artifacts:
     paths:
       - $CI_PROJECT_DIR/software/firmware/partition_table/partition-table.bin
-      - $CI_PROJECT_DIR/software/firmware/ota_data_initial.bin
       - $CI_PROJECT_DIR/software/firmware/bootloader/bootloader.bin
       - $CI_PROJECT_DIR/software/firmware/flipdot-firmware.bin
+
+build_service_util:
+  stage: build
+  tags:
+    - docker
+  script:
+    - go get -u github.com/a-urth/go-bindata/...
+    - go get github.com/fluepke/esptool
+    - eval $(go env) && cd $CI_PROJECT_DIR/software/service_utility && $GOPATH/bin/go-bindata -o binary.go ../firmware/partition_table/partition-table.bin ../firmware/bootloader/bootloader.bin ../firmware/flipdot-firmware.bin && go build
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/software/service_utility/service_utility
