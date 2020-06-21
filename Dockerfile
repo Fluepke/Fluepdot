@@ -1,12 +1,13 @@
 FROM archlinux:20200505
 RUN pacman -Syu --noconfirm --needed gcc git make ncurses flex bison gperf python-pyserial python-click python-cryptography python-future python-pyparsing python-pyelftools cmake ninja ccache dfu-util \ 
-    gawk gperf grep gettext ncurses python2 python2-pip python-pip automake bison flex texinfo help2man libtool make autoconf unzip which patch doxygen cxxtest freetype2 pkgconf
+    gawk gperf grep gettext ncurses python2 python2-pip python-pip automake bison flex texinfo help2man libtool make autoconf unzip which patch doxygen cxxtest freetype2 pkgconf go
 RUN mkdir /esp
 RUN git clone -b fluepke/snmp --recursive https://github.com/Fluepke/esp-idf.git /esp/esp-idf
 ENV IDF_PATH="/esp/esp-idf"
 RUN pip2.7 install -r /esp/esp-idf/requirements.txt && pip install -r /esp/esp-idf/requirements.txt
 RUN groupadd -g 1337 esp && useradd -r -u 1337 -g esp esp
 RUN chown -R esp:esp /esp
+ENV HOME=/esp
 COPY ./docs/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 USER esp
