@@ -13,6 +13,9 @@ For **documentation** and a **getting started**, please head over to [https://fl
 
 Flipdots and required HW  can be purchased by contacting [fluepdot-sales@luepke.email](mailto:fluepdot-sales@luepke.email).
 
+## Firmware
+You can download the latest standalone firmware installer [here](https://gitlab.com/fluepke/fluepdot/-/jobs/artifacts/master/raw/software/service_utility/service_utility?job=build_service_utility).
+
 ## License
 Copyright (c) 2020, [@fluepke](http://twitter.com/fluepke) (Fabian Luepke)
 
