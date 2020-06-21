@@ -2,3 +2,4 @@ sphinx==3.0.2
 breathe==4.16.0
 sphinx-rtd-theme==0.4.3
 sphinxcontrib-runcmd==0.2.0
+sphinx-copybutton==0.2.12

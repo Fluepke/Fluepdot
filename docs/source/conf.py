@@ -19,7 +19,7 @@ def setup(app):
     pass
 #    app.add_stylesheet("main_stylesheet.css")
 
-extensions = ['breathe', 'sphinxcontrib.runcmd']
+extensions = ['breathe', 'sphinxcontrib.runcmd', 'sphinx_copybutton']
 breathe_projects = { 'fluepdot': '../xml' }
 templates_path = ['_templates']
 html_static_path = ['_static']
