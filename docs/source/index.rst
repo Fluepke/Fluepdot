@@ -55,6 +55,11 @@ Features:
    http_api
 
 .. toctree ::
+   :caption: FIRMWARE
+
+   firmware_update
+
+.. toctree ::
    :caption: DEVELOPER ZONE
    :maxdepth: 2
 
