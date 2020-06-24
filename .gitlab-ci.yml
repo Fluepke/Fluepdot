@@ -15,6 +15,7 @@ create_epub:
   tags:
     - docker
   script:
+    - pip install -r $CI_PROJECT_DIR/docs/requirements.txt
     - cd $CI_PROJECT_DIR/docs
     - make epub
   artifacts:
