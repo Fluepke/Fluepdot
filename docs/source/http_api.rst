@@ -72,6 +72,7 @@ Sets the pixel at the given coordinate to bright.
 
 DELETE /pixel
 ^^^^^^^^^^^^^
+
 Params
     GET
         x
@@ -80,6 +81,30 @@ Params
             The y coordinate (ascii encoded decimal value)
 
 Set the pixel at the give coordinate to dark.
+
+POST /framebuffer/text
+^^^^^^^^^^^^^^^^^^^^^^
+
+Params
+    POST
+        Text to display
+    GET
+        x
+            The x coordinate to render text to
+        y
+            The y coordinate to render text to
+        font
+            The font's name to use for rendering text. Retrieve a list of fonts at `GET /fonts`
+
+Render a string
+
+GET /fonts
+^^^^^^^^^^
+
+Returns a list of installed fonts
+
+For each font there are two lines: First the **full_name** and then **short_name** which is used with the `POST /framebuffer/text` eAPI endpoint.
+
 
 Rendering options
 =================

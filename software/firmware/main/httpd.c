@@ -4,7 +4,7 @@
 #include "flipdot.h"
 #include "main.h"
 #include "util.h"
-
+#include "font_rendering.h"
 
 static const char* TAG = "httpd.c";
 
@@ -183,7 +183,7 @@ static esp_err_t http_api_put_rendering_mode(httpd_req_t *req) {
         return ESP_ERR_INVALID_ARG;
     }
     
-    buf = calloc(req->content_len, sizeof(char));
+    buf = calloc(req->content_len + 1, sizeof(char));
 
     if (buf == NULL) {
         return ESP_ERR_NO_MEM;
@@ -201,6 +201,7 @@ static esp_err_t http_api_put_rendering_mode(httpd_req_t *req) {
         }
         received_bytes += ret;
     }
+    buf[req->content_len] = 0;
         
     int rendering_mode = atoi(buf);
     
@@ -282,10 +283,117 @@ static const httpd_uri_t post_rendering_timings = {
     .handler = http_api_post_rendering_timings,
 };
 
+static esp_err_t http_api_get_fonts(httpd_req_t *req) {
+    const struct mf_font_list_s* font_list = mf_get_font_list();
+
+    while (font_list) {
+        httpd_resp_send_chunk(req, font_list->font->full_name, strlen(font_list->font->full_name));
+        httpd_resp_send_chunk(req, "\n", 1);
+        httpd_resp_send_chunk(req, font_list->font->short_name, strlen(font_list->font->short_name));
+        httpd_resp_send_chunk(req, "\n", 1);
+        font_list = font_list->next;
+    }
+
+    httpd_resp_send_chunk(req, NULL, 0);
+
+    return ESP_OK;
+}
+
+static const httpd_uri_t get_fonts = {
+    .uri = "/fonts",
+    .method = HTTP_GET,
+    .handler = http_api_get_fonts,
+};
+
+static esp_err_t http_api_post_framebuffer_text(httpd_req_t *req) {
+    // receive posted text
+    size_t received_bytes = 0;
+    esp_err_t error = ESP_OK;
+
+    if (req->content_len > 64) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    
+    char* text = calloc(req->content_len + 1, sizeof(char));
+    size_t buf_len = httpd_req_get_url_query_len(req) + 1;
+    char* buf = malloc(buf_len);
+
+    if (text == NULL || buf == NULL) {
+        return ESP_ERR_NO_MEM;
+    }
+
+    while (received_bytes < req->content_len) {
+        int ret = httpd_req_recv(req, &text[received_bytes], req->content_len - received_bytes);
+        if (ret <= 0) {
+            if (ret == HTTPD_SOCK_ERR_TIMEOUT) {
+                httpd_resp_send_408(req);
+            }
+
+            error = ESP_FAIL;
+            goto ERROR;
+        }
+        received_bytes += ret;
+    }
+    text[req->content_len] = 0;
+
+    // read GET parameters
+    char param_font[32], param_x[4], param_y[4] = { 0 };
+    uint8_t x = 0, y = 0;
+
+    error = httpd_req_get_url_query_str(req, buf, buf_len);
+    if (error != ESP_OK) {
+        ESP_LOGE(TAG, "httpd_req_get_url_query_str returned %d", error);
+        goto ERROR; }
+    error = httpd_query_key_value(buf, "font", param_font, sizeof(param_font));
+    if (error != ESP_OK) {
+        if (error == ESP_ERR_NOT_FOUND) {
+            strcpy(param_font, "DejaVuSans");
+        } else { goto ERROR; }
+    }
+    font_rendering_state_t state = {
+        .font = mf_find_font(param_font),
+        .framebuffer = flipdot.framebuffer,
+    };
+
+    if (state.font == NULL) { 
+        ESP_LOGE(TAG, "Could not find font %s", param_font);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    error = httpd_query_key_value(buf, "x", param_x, sizeof(param_x));
+    if (error != ESP_OK && error != ESP_ERR_NOT_FOUND) { goto ERROR; }
+    x = atoi(param_x);
+    error = httpd_query_key_value(buf, "y", param_y, sizeof(param_y));
+    if (error != ESP_OK && error != ESP_ERR_NOT_FOUND) { goto ERROR; }
+    y = atoi(param_y);
+
+    // clear flipdot
+    memset(flipdot.framebuffer->columns, 0, 2 * flipdot.width);
+
+    mf_render_justified(state.font, x, y, flipdot.width, text, 0, character_callback, (void*)&state);
+
+    flipdot_set_dirty_flag(&flipdot);
+
+    free(buf);
+
+    return http_api_get_framebuffer(req);
+
+ERROR:
+    free(buf);
+    return error;
+}
+
+static const httpd_uri_t post_framebuffer_text = {
+    .uri = "/framebuffer/text",
+    .method = HTTP_POST,
+    .handler = http_api_post_framebuffer_text,
+};
+
+
 esp_err_t httpd_initialize(httpd_handle_t server) {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
 
-    config.max_uri_handlers = 10;
+    config.max_uri_handlers = 16;
 
     if (httpd_start(&server, &config) == ESP_OK) {
         ERROR_CHECK(httpd_register_uri_handler(server, &get_framebuffer));
@@ -297,6 +405,8 @@ esp_err_t httpd_initialize(httpd_handle_t server) {
         ERROR_CHECK(httpd_register_uri_handler(server, &get_rendering_mode));
         ERROR_CHECK(httpd_register_uri_handler(server, &get_rendering_timings));
         ERROR_CHECK(httpd_register_uri_handler(server, &post_rendering_timings));
+        ERROR_CHECK(httpd_register_uri_handler(server, &get_fonts));
+        ERROR_CHECK(httpd_register_uri_handler(server, &post_framebuffer_text));
     }
 
     return ESP_OK;
