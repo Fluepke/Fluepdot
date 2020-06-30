@@ -59,6 +59,7 @@ static esp_err_t wifi_init_ap(wifi_t* wifi, system_configuration_wifi_t* system_
     
     ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ERROR_CHECK(wifi_configure_ap(system_configuration_wifi));
+    ERROR_CHECK(esp_netif_create_ip6_linklocal(wifi->netif));
 
     return esp_wifi_start();
 }
@@ -107,6 +108,7 @@ static esp_err_t wifi_init_station(wifi_t* wifi, system_configuration_wifi_t* sy
     ERROR_CHECK(wifi_configure_station(system_configuration_wifi));
     ERROR_CHECK(esp_wifi_start());
     ERROR_CHECK(wifi_wait_connected(wifi));
+    ERROR_CHECK(esp_netif_create_ip6_linklocal(wifi->netif));
 
     return ESP_OK;
 }

@@ -2,6 +2,7 @@
 
 #include "flipdot.h"
 #include "system_configuration.h"
+#include "wifi.h"
 
 #define ERROR_SHOW(func) { \
     esp_err_t error = func; \
@@ -12,3 +13,4 @@
 
 extern system_configuration_t system_configuration;
 extern flipdot_t flipdot;
+extern wifi_t wifi;

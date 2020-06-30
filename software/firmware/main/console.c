@@ -23,6 +23,7 @@ esp_err_t console_initialize(system_configuration_t* system_configuration) {
     register_ping();
     ERROR_CHECK(register_host_cmd());
     ERROR_CHECK(register_traceroute_cmd());
+    ERROR_CHECK(console_register_show_ip());
     ERROR_CHECK(console_register_reboot());
     ERROR_CHECK(console_register_show_version());
     ERROR_CHECK(console_register_show_tasks());

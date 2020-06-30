@@ -11,8 +11,44 @@
 #include "wifi.h"
 #include "console_commands.h"
 #include "font_rendering.h"
+#include "esp_netif.h"
 
 static const char* TAG = "console_commands.c";
+
+static const char *s_ipv6_addr_types[] = {
+    "ESP_IP6_ADDR_IS_UNKNOWN",
+    "ESP_IP6_ADDR_IS_GLOBAL",
+    "ESP_IP6_ADDR_IS_LINK_LOCAL",
+    "ESP_IP6_ADDR_IS_SITE_LOCAL",
+    "ESP_IP6_ADDR_IS_UNIQUE_LOCAL",
+    "ESP_IP6_ADDR_IS_IPV4_MAPPED_IPV6"
+    };
+
+static int console_show_ip(int argc, char **argv) {
+    esp_netif_ip_info_t ip;
+    ESP_ERROR_CHECK(esp_netif_get_ip_info(wifi.netif, &ip));
+    printf("- IPv4 address: " IPSTR "\n", IP2STR(&ip.ip));
+    esp_ip6_addr_t ip6[LWIP_IPV6_NUM_ADDRESSES];
+    int ip6_addrs = esp_netif_get_all_ip6(wifi.netif, ip6);
+    for (int j=0; j< ip6_addrs; ++j) {
+        esp_ip6_addr_type_t ipv6_type = esp_netif_ip6_get_addr_type(&(ip6[j]));
+        printf( "- IPv6 address: " IPV6STR ", type: %s\n", IPV62STR(ip6[j]), s_ipv6_addr_types[ipv6_type]);
+    }
+    return 0;
+}
+
+esp_err_t console_register_show_ip(void) {
+    const esp_console_cmd_t cmd = {
+        .command = "show_ip",
+        .help = "Show IP configuration",
+        .hint = NULL,
+        .func = &console_show_ip,
+    };
+
+    ERROR_CHECK(esp_console_cmd_register(&cmd));
+
+    return ESP_OK;
+}
 
 static int console_reboot(int argc, char **argv) {
     ESP_LOGI(TAG, "Reboot tud gud!");
