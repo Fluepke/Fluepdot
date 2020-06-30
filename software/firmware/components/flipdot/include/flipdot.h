@@ -18,6 +18,7 @@
   * Used to signal the @see flipdot.task that the framebuffer is dirty.
   */
 #define FLIPDOT_FRAMEBUFFER_DIRTY_BIT BIT0
+#define FLIPDOT_RENDERING_DONE_BIT    BIT1
 
 /**
   * Limit imposed by hardware by default.

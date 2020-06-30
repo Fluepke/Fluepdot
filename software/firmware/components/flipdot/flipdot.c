@@ -451,6 +451,8 @@ static void flipdot_task(void* param) {
     ESP_LOGI(TAG, "flipdot_task started");
 
     while(true) {
+        xEventGroupClearBits(flipdot->event_group,
+                FLIPDOT_RENDERING_DONE_BIT);
         EventBits_t bits = xEventGroupWaitBits(
                 flipdot->event_group,
                 FLIPDOT_FRAMEBUFFER_DIRTY_BIT,
@@ -466,5 +468,7 @@ static void flipdot_task(void* param) {
         esp_err_t error;
         FLIPDOT_ERROR_SHOW(error, flipdot_render(flipdot));
         ESP_LOGV(TAG, "Rendering done");
+        xEventGroupSetBits(flipdot->event_group,
+                FLIPDOT_RENDERING_DONE_BIT);
     }
 }
