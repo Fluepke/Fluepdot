@@ -389,6 +389,24 @@ static const httpd_uri_t post_framebuffer_text = {
     .handler = http_api_post_framebuffer_text,
 };
 
+static esp_err_t http_api_get_rendering_wait(httpd_req_t *req) {
+    if (xEventGroupWaitBits(
+            flipdot.event_group,
+            FLIPDOT_RENDERING_DONE_BIT,
+            true,
+            false,
+            3000 / portTICK_PERIOD_MS) & FLIPDOT_RENDERING_DONE_BIT) {
+        return httpd_resp_send(req, "ok", 2);
+    } else {
+        return httpd_resp_send_500(req);
+    }
+}
+
+static const httpd_uri_t get_rendering_wait = {
+    .uri = "/rendering/wait",
+    .method = HTTP_GET,
+    .handler = http_api_get_rendering_wait,
+};
 
 esp_err_t httpd_initialize(httpd_handle_t server) {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
@@ -407,6 +425,7 @@ esp_err_t httpd_initialize(httpd_handle_t server) {
         ERROR_CHECK(httpd_register_uri_handler(server, &post_rendering_timings));
         ERROR_CHECK(httpd_register_uri_handler(server, &get_fonts));
         ERROR_CHECK(httpd_register_uri_handler(server, &post_framebuffer_text));
+        ERROR_CHECK(httpd_register_uri_handler(server, &get_rendering_wait));
     }
 
     return ESP_OK;
