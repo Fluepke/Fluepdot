@@ -16,4 +16,5 @@ idf_component_register(SRCS "main.c"
                             "snmp.c"
                             "bluetooth.c"
                             "fluepdot_mib.c"
+                            "raw_api.c"
                     INCLUDE_DIRS "." "include")

@@ -1,11 +1,11 @@
 #include "console.h"
 #include "main.h"
-#include "wifi.h"
 #include "mdns_util.h"
 #include "httpd.h"
 #include "snmp.h"
 #include "util.h"
 #include "bluetooth.h"
+#include "raw_api.h"
 
 #include "freertos/FreeRTOS.h"
 #include "esp_event.h"
@@ -15,10 +15,9 @@
 static const char* TAG = "main.c";
 
 system_configuration_t system_configuration;
-wifi_t wifi;
 flipdot_t flipdot;
 httpd_handle_t httpd_server;
-
+wifi_t wifi;
 
 static esp_err_t initialize() {
     // initialize non-volatile storage
@@ -77,6 +76,9 @@ void app_main() {
     // initialize the SNMP agent
     ERROR_SHOW(snmp_initialize());
     ESP_LOGI(TAG, "snmp initialized");
+
+    ERROR_SHOW(raw_api_initialize());
+    ESP_LOGI(TAG, "raw api initialized");
 
     // intialize the interactive console
     ERROR_SHOW(console_initialize(&system_configuration));
