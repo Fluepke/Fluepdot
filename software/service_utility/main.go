@@ -1,7 +1,7 @@
 package main
 
 // create binary data using
-// ~/go/bin/go-bindata -o binary.go ../firmware/partition_table/partition-table.bin ../firmware/bootloader/bootloader.bin ../firmware/flipdot-firmware.bin
+// ~/go/bin/go-bindata -o binary.go ../firmware/partition_table/partition-table.bin ../firmware/bootloader/bootloader.bin ../firmware/flipdot-firmware.bin ../firmware/ota_data_initial.bin
 
 import (
 	"flag"
@@ -29,7 +29,7 @@ func flash(esp32 *esp32.ESP32ROM, asset string, offset uint32) {
 		os.Exit(4)
 	}
 
-	if err = esp32.WriteFlash(offset, data); err != nil {
+	if err = esp32.WriteFlash(offset, data, true); err != nil {
 		logger.Printf("Write to flash failed: %v", err)
 		os.Exit(5)
 	}
@@ -68,6 +68,7 @@ func main() {
 	flash(esp32, "../firmware/partition_table/partition-table.bin", 0x800)
 	flash(esp32, "../firmware/bootloader/bootloader.bin", 0xd000)
 	flash(esp32, "../firmware/flipdot-firmware.bin", 0x10000)
+	flash(esp32, "../firmware/ota_data_initial.bin", 0xD000)
 
 	logger.Println("Firmware written to device. Have fun.")
 }
