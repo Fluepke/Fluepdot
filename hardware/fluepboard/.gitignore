@@ -28,13 +28,11 @@ fp-info-cache
 
 # Exported BOM files
 *.xml
-*.csv
 
 ### KiCad Patch ###
 escue-backup/
 
 *.tsv
-bom/
 
 # Gerber export output
 gerbers/
