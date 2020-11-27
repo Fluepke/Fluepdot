@@ -15,6 +15,7 @@ Make sure your current user has permission to use the serial port (in this examp
         ./service_utility -serial.port /dev/ttyUSB0
 
 This utility will flash:
+
 * the partition table
 * the bootloader
 * the factory application
@@ -28,6 +29,8 @@ You can also flash the firmware using `esptool.py`_. `Download`_ and unpack the 
     .. code:: bash
 
         esptool.py --chip esp32 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 40m --flash_size 4MB 0x8000 partition_table/partition-table.bin 0x1000 bootloader/bootloader.bin 0x10000 flipdot-firmware.bin
+
+In case the reset circuit on the board does not work and is not able to put the ESP32 into bootloader mode (i.e. because the ESP32 constantly reboots), manually connect the GPIO0 pin to ground to force the bootloader start.
 
 .. _here: https://gitlab.com/fluepke/fluepdot/-/jobs/artifacts/master/raw/software/service_utility/service_utility?job=build_service_utility
 .. _esptool.py: https://github.com/espressif/esptool
