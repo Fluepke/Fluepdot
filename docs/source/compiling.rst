@@ -36,3 +36,9 @@ A multistage **Docker** environment is used to build firmware and documentation.
             docker run -d --name fluepdot --device /dev/ttyUSB0:/fluepdot-device:rwm fluepdot
             docker exec -it -w "/fluepdot/software/firmware" -e ESPTOOL_PORT='/fluepdot-device' -e ESPTOOL_BAUD='480000' fluepdot make flash
 
+5. NOTE: the esp user in the container might not have the rights to access ``/dev/ttyUSB0`` (you will see a permissions denied error when trying to flash). A quick and dirty way to temporarily circumvent this issue is the following
+
+        .. code:: bash
+
+            sudo chmod 666 /dev/ttyUSB0
+
