@@ -33,10 +33,6 @@ A multistage **Docker** environment is used to build firmware and documentation.
 
         .. code:: bash
            
-            docker run -d --name fluepdot --device /dev/ttyUSB0:/fluepdot-device:rwm
-            docker exec -it fluepdot \
-                -w "/fluepdot/software/firmware" \
-                -e ESPTOOL_PORT='/fluepdot-device' \
-                -e ESPTOOL_BAUD='480000' \
-                make flash
+            docker run -d --name fluepdot --device /dev/ttyUSB0:/fluepdot-device:rwm fluepdot
+            docker exec -it -w "/fluepdot/software/firmware" -e ESPTOOL_PORT='/fluepdot-device' -e ESPTOOL_BAUD='480000' fluepdot make flash
 
