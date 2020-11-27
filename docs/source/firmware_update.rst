@@ -15,6 +15,7 @@ Make sure your current user has permission to use the serial port (in this examp
         ./service_utility -serial.port /dev/ttyUSB0
 
 This utility will flash:
+
 * the partition table
 * the bootloader
 * the factory application
