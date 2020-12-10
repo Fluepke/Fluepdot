@@ -17,7 +17,7 @@ Comment,Designator,Footprint,LCSC, LCSC, Octopart, Description, Extended Part, M
 "MountingHole","H1,H3,H4,H2","MountingHole:MountingHole_3.2mm_M3_ISO7380",""
 "TPS54331DR","IC1","Package_SO:SOIC-8_3.9x4.9mm_P1.27mm","","C9865","","DC-DC CONVERTERS STEP-DOWN ADJUSTABLE 1 3.5V 28V 0.8V 25V 3A SOIC-8_150MIL ROHS","0","TPS54331DR","","","","","","","","","","","",""
 "ULN2803ADWR","IC2,IC4,IC3","Package_SO:SOIC-18W_7.5x11.6mm_P1.27mm","","C9683","ULN2803ADW","TRANS 8NPN DARL 50V 0.5A 18SO","0","ULN2803ADWR","","","","","Discrete Semiconductor Products","http://www.ti.com/lit/ds/symlink/uln2803a.pdf","/product-detail/en/texas-instruments/ULN2803ADWR/296-15777-1-ND/598088","296-15777-1-ND","Transistors - Bipolar (BJT) - Arrays","ULN2803ADWR","review",""
-"74HCT595","IC7,IC6,IC5","Package_SO:SOIC-16_3.9x9.9mm_P1.27mm","","C5613","MC74HC595ADG","","0","","","","","","","","","","","","",""
+"74HCT595","IC7,IC6,IC5","Package_SO:SOIC-16_3.9x9.9mm_P1.27mm","","C5947","MC74HC595ADG","","0","","","","","","","","","","","","",""
 "SP3485EN","IC8","Package_SO:SOIC-8_3.9x4.9mm_P1.27mm","","C8963","","","0","CP2102-GMR","","","","","","","","","","","",""
 "USB_B","J1","Connector_USB:USB_B_OST_USB-B1HSxx_Horizontal","","C46392","","","","","","","","","","","","","","","",""
 "Conn_01x10_Female","J2","fluepdot:TerminalBlock_Phoenix_MPT-0,5-10-2.54_1x10_P2.54mm_Horizontal",""
