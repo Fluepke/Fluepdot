@@ -8,7 +8,16 @@
 
 static const char* TAG = "httpd.c";
 
+
+static const char* CORS_HEADER = "Access-Control-Allow-Origin";
+static const char* CORS_HEADER_VALUE = "*";
+
+esp_err_t httpd_set_hdr(httpd_req_t *req) {
+    return httpd_resp_set_hdr(req, CORS_HEADER, CORS_HEADER_VALUE);
+}
+
 static esp_err_t http_api_get_framebuffer(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     size_t buf_len = flipdot.width + 1;
     char* buf = calloc(buf_len, sizeof(char));
     if (buf == NULL) { return ESP_ERR_NO_MEM; }
@@ -32,6 +41,7 @@ static const httpd_uri_t get_framebuffer = {
 };
 
 static esp_err_t http_api_post_framebuffer(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     size_t buf_len = flipdot.width + 1;
     char* buf = calloc(buf_len, sizeof(char));
     if (buf == NULL) { return ESP_ERR_NO_MEM; }
@@ -95,6 +105,7 @@ static const httpd_uri_t post_framebuffer = {
 };
 
 static esp_err_t http_api_pixel_handler(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     size_t buf_len = httpd_req_get_url_query_len(req) + 1;
 
     if (buf_len <= 1) {
@@ -163,6 +174,7 @@ static const httpd_uri_t post_pixel = {
 };
 
 esp_err_t http_api_get_rendering_mode(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     char response[3] = {};
     snprintf(response, sizeof(response), "%d\n", flipdot.rendering_options->mode);
     return httpd_resp_send(req, response, sizeof(response));
@@ -175,6 +187,7 @@ static const httpd_uri_t get_rendering_mode = {
 };
 
 static esp_err_t http_api_put_rendering_mode(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     size_t received_bytes = 0;
     char* buf;
     esp_err_t error = ESP_OK;
@@ -229,6 +242,7 @@ static const httpd_uri_t put_rendering_mode = {
 };
 
 esp_err_t http_api_get_rendering_timings(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     char buf[19];
 
     for (int x=0; x<flipdot.width; x++) {
@@ -252,6 +266,7 @@ static const httpd_uri_t get_rendering_timings = {
 };
 
 esp_err_t http_api_post_rendering_timings(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     char buf[19];
 
     for (int x=0; x<flipdot.width; x++) {
@@ -284,6 +299,7 @@ static const httpd_uri_t post_rendering_timings = {
 };
 
 static esp_err_t http_api_get_fonts(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     const struct mf_font_list_s* font_list = mf_get_font_list();
 
     while (font_list) {
@@ -306,6 +322,7 @@ static const httpd_uri_t get_fonts = {
 };
 
 static esp_err_t http_api_post_framebuffer_text(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     // receive posted text
     size_t received_bytes = 0;
     esp_err_t error = ESP_OK;
@@ -390,6 +407,7 @@ static const httpd_uri_t post_framebuffer_text = {
 };
 
 static esp_err_t http_api_get_rendering_wait(httpd_req_t *req) {
+    ERROR_SHOW(httpd_set_hdr(req));
     if (xEventGroupWaitBits(
             flipdot.event_group,
             FLIPDOT_RENDERING_DONE_BIT,
