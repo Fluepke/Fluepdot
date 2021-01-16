@@ -70,5 +70,5 @@ menu "Flipdot Firmware Defaults"
 
     config DEFAULT_SYSTEMCONFIGURATION_HOSTNAME
         string "The system's hostname"
-        default "fluepdot.local"
+        default "fluepdot"
 endmenu
