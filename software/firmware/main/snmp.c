@@ -25,7 +25,7 @@ esp_err_t snmp_initialize(void) {
     snmp_mib2_set_syslocation(SNMP_SYSLOCATION, &SNMP_SYSLOCATION_LEN, 0);
     snmp_set_auth_traps_enabled(0);
 
-    snmp_set_mibs(my_mibs, 1);
+    snmp_set_mibs(my_mibs, 2);
     snmp_init();
 
     return ESP_OK;

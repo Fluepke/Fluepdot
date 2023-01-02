@@ -127,9 +127,9 @@ static esp_err_t wifi_wait_connected(wifi_t* wifi) {
     EventBits_t bits = xEventGroupWaitBits(wifi->event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
 
     ERROR_CHECK(esp_event_handler_unregister(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler));
-    ERROR_CHECK(esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler));
+    // ERROR_CHECK(esp_event_handler_unregister(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler));
 
-    vEventGroupDelete(wifi->event_group);
+    // vEventGroupDelete(wifi->event_group);
 
     if (bits & WIFI_CONNECTED_BIT) {
         return ESP_OK;
@@ -146,15 +146,17 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         ERROR_DISCARD(esp_wifi_connect());
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (wifi->retry_count < WIFI_MAXIMUM_RETRY) {
-            ESP_LOGI(TAG, "Connecting with the AP failed. Retrying %d/%d",
-                    wifi->retry_count, WIFI_MAXIMUM_RETRY);
-            wifi->retry_count++;
-            ERROR_DISCARD(esp_wifi_connect());
-        } else {
+        ESP_LOGI(TAG, "Connecting with the AP failed. Retrying %d/%d",
+                wifi->retry_count, WIFI_MAXIMUM_RETRY);
+        wifi->retry_count++;
+        ERROR_DISCARD(esp_wifi_connect());
+        if (wifi->retry_count == WIFI_MAXIMUM_RETRY) {
             ESP_LOGE(TAG, "Failed to connect");
             xEventGroupSetBits(wifi->event_group, WIFI_FAIL_BIT);
         }
+    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED) {
+        ESP_LOGI(TAG, "Connected to station");
+        ERROR_DISCARD(esp_netif_create_ip6_linklocal(wifi->netif));
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         wifi->retry_count = 0;
         ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
