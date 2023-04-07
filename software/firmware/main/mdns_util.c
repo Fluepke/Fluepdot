@@ -1,5 +1,6 @@
 #include "mdns_util.h"
 
+#include "esp_netif.h"
 #include "mdns.h"
 
 #include "system_configuration.h"

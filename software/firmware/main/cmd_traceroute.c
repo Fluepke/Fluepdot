@@ -89,7 +89,7 @@ static int do_traceroute(int argc, char **argv) {
                     printf_sockaddr(from.ss_family, (struct sockaddr *)&from);
                     printf(" ");
                 }
-                printf(" %d ms ", TIME_DIFF_MS(end_time, start_time));
+                printf(" %ld ms ", TIME_DIFF_MS(end_time, start_time));
             } else {
                 printf(" * ");
             }

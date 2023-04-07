@@ -5,6 +5,7 @@
 #include "main.h"
 #include "util.h"
 #include "font_rendering.h"
+#include "base64.h"
 
 static const char* TAG = "httpd.c";
 
@@ -252,7 +253,7 @@ esp_err_t http_api_get_rendering_timings(httpd_req_t *req) {
                 flipdot.rendering_options->delay_options[x].pre_delay,
                 flipdot.rendering_options->delay_options[x].clear_delay,
                 flipdot.rendering_options->delay_options[x].set_delay);
-        httpd_resp_send_chunk(req, buf, sizeof(buf));
+        httpd_resp_send_chunk(req, buf, sizeof(buf) - 1);
     }
     
     httpd_resp_send_chunk(req, NULL, 0);

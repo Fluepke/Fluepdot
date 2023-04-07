@@ -4,7 +4,7 @@
 
 #define ERROR_CHECK(func) { \
     esp_err_t error; \
-    if (( error = (func)) != OK) { \
+    if (( error = (func)) != ESP_OK) { \
         ESP_LOGE(TAG, "Exception %s in function %s:%d occured", \
                 esp_err_to_name(error), \
                 __FUNCTION__, \
@@ -15,7 +15,7 @@
 
 #define ERROR_DISCARD(func) { \
     esp_err_t error; \
-    if (( error = (func)) != OK) { \
+    if (( error = (func)) != ESP_OK) { \
         ESP_LOGE(TAG, "Exception %s in function %s:%d occured", \
                 esp_err_to_name(error), \
                 __FUNCTION__, \

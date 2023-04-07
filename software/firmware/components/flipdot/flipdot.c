@@ -1,5 +1,6 @@
 #include "flipdot.h"
 
+#include "driver/spi_master.h"
 #include "driver/gpio.h"
 #include <string.h>
 
@@ -26,7 +27,7 @@ static void flipdot_task(void* param);
 
 static esp_err_t flipdot_initialize_gpio(flipdot_t* flipdot) {
     gpio_config_t io_conf = {
-        .intr_type = GPIO_PIN_INTR_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
         .mode = GPIO_MODE_OUTPUT,
         .pin_bit_mask = 
             (1ULL << FLIPDOT_GPIO_RCLK_PIN) |
@@ -78,7 +79,7 @@ static esp_err_t flipdot_write_registers(flipdot_t* flipdot) {
 
     // clear shift register
     FLIPDOT_ERROR_CHECK(gpio_set_level(FLIPDOT_GPIO_SRCLR_PIN, 0));
-    ets_delay_us(100);
+    esp_rom_delay_us(100);
     FLIPDOT_ERROR_CHECK(gpio_set_level(FLIPDOT_GPIO_SRCLR_PIN, 1));
 
     spi_transaction_t spi_transaction;
@@ -91,10 +92,10 @@ static esp_err_t flipdot_write_registers(flipdot_t* flipdot) {
     FLIPDOT_ERROR_CHECK(spi_device_polling_transmit(flipdot->spi_device_handle, &spi_transaction));
 
     gpio_set_level(FLIPDOT_GPIO_RCLK_PIN, 0);
-    ets_delay_us(100);
+    esp_rom_delay_us(100);
     gpio_set_level(FLIPDOT_GPIO_RCLK_PIN, 1);
     
-    ets_delay_us(100);
+    esp_rom_delay_us(100);
 
     return ESP_OK;
 }
@@ -153,6 +154,8 @@ esp_err_t flipdot_initialize(flipdot_t* flipdot, flipdot_configuration_t* flipdo
     
     FLIPDOT_ERROR_NO_PREV(error,
         flipdot_initialize_spi(flipdot));
+
+    flipdot->rendering_options->mode = flipdot_configuration->rendering_mode;
     
     FLIPDOT_ERROR_NO_PREV(error,
         flipdot_initialize_gpio(flipdot));
@@ -355,7 +358,7 @@ static esp_err_t flipdot_select_panel(flipdot_t* flipdot, uint8_t panel_index) {
     flipdot->io.clear = 0;
     flipdot->io.rows = 0;
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
-    ets_delay_us(100);
+    esp_rom_delay_us(100);
 
     // clock in inital 1
     flipdot->io.select = (~(1 << panel_index)) & 0b00011111;
@@ -363,7 +366,7 @@ static esp_err_t flipdot_select_panel(flipdot_t* flipdot, uint8_t panel_index) {
 
     // flipdot->io.control_register.reset = 0;
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
-    ets_delay_us(100);
+    esp_rom_delay_us(100);
 
     return ESP_OK;
 }
@@ -391,7 +394,7 @@ static esp_err_t flipdot_render_column(flipdot_t* flipdot, uint8_t x) {
         &(flipdot->internal_rendering_options->delay_options[x]);
 
     /** PRE CYCLE **/
-    ets_delay_us(((uint32_t)delays->pre_delay) * 50);
+    esp_rom_delay_us(((uint32_t)delays->pre_delay) * 50);
 
     /** CLEAR CYCLE **/
     flipdot->io.clock = 0;
@@ -405,11 +408,11 @@ static esp_err_t flipdot_render_column(flipdot_t* flipdot, uint8_t x) {
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
 
     if (!skip_clear) {
-        ets_delay_us((uint32_t)(delays->clear_delay) * 50);
+        esp_rom_delay_us((uint32_t)(delays->clear_delay) * 50);
         flipdot->io.clear = 0;
         flipdot_write_registers(flipdot);
     } else {
-        ets_delay_us(100);
+        esp_rom_delay_us(100);
     }
 
     /** SET CYCLE **/
@@ -420,9 +423,9 @@ static esp_err_t flipdot_render_column(flipdot_t* flipdot, uint8_t x) {
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));
 
     if (!skip_set) {
-        ets_delay_us((uint32_t)(delays->set_delay) * 50);
+        esp_rom_delay_us((uint32_t)(delays->set_delay) * 50);
     } else {
-        ets_delay_us(100);
+        esp_rom_delay_us(100);
     }
     flipdot->io.rows = 0;
     FLIPDOT_ERROR_CHECK(flipdot_write_registers(flipdot));

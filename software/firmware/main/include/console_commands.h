@@ -13,6 +13,8 @@ esp_err_t console_register_config_show(void);
 esp_err_t console_register_config_reset(void);
 esp_err_t console_register_config_wifi_ap(void);
 esp_err_t console_register_config_wifi_station(void);
+esp_err_t console_register_config_rendering_mode(void);
 esp_err_t console_register_config_hostname(void);
 esp_err_t console_register_config_panel_layout(void);
 esp_err_t console_register_flipdot_clear(void);
+esp_err_t console_register_framebuf64(void);

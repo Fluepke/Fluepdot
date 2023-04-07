@@ -2,9 +2,7 @@
 #include "main.h"
 #include "mdns_util.h"
 #include "httpd.h"
-#include "snmp.h"
 #include "util.h"
-#include "bluetooth.h"
 #include "raw_api.h"
 
 #include "freertos/FreeRTOS.h"
@@ -46,6 +44,11 @@ void app_main() {
     // load the system configuration
     ESP_ERROR_CHECK(system_configuration_load(&system_configuration));
     ESP_LOGI(TAG, "System configuration loaded");
+    
+    // intialize the interactive console
+    ERROR_SHOW(console_initialize(&system_configuration));
+    ESP_LOGI(TAG, "console initialized");
+
 
     // initialize wireless connections
     ERROR_SHOW(wifi_initialize(&wifi, &system_configuration.wifi, system_configuration.hostname));
@@ -54,10 +57,6 @@ void app_main() {
     // initialize mDNS
     ERROR_SHOW(mdns_initialize(system_configuration.hostname));
     ESP_LOGI(TAG, "mDNS initialized");
-
-    // initialize Bluetooth LE
-    ERROR_SHOW(bluetooth_initialize());
-    ESP_LOGI(TAG, "Bluetooth initialized");
 
     // TODO initialize wired connections
 
@@ -73,16 +72,8 @@ void app_main() {
     ERROR_SHOW(httpd_initialize(httpd_server));
     ESP_LOGI(TAG, "httpd initialized");
 
-    // initialize the SNMP agent
-    ERROR_SHOW(snmp_initialize());
-    ESP_LOGI(TAG, "snmp initialized");
-
     ERROR_SHOW(raw_api_initialize());
     ESP_LOGI(TAG, "raw api initialized");
-
-    // intialize the interactive console
-    ERROR_SHOW(console_initialize(&system_configuration));
-    ESP_LOGI(TAG, "console initialized");
 
     while (true) {
         vTaskDelay(500 * portTICK_PERIOD_MS);

@@ -183,3 +183,4 @@ flash_args.in
 otadata-flash_args
 partition_table-flash_args
 x509_crt_bundle.S
+managed_components

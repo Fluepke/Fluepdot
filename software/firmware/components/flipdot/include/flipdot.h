@@ -4,8 +4,8 @@
   */
 #pragma once
 
-#include "driver/spi_master.h"
 #include "freertos/FreeRTOS.h"
+#include "driver/spi_master.h"
 #include "freertos/semphr.h"
 #include "freertos/event_groups.h"
 
@@ -149,6 +149,10 @@ typedef struct {
       * Width of the attached panels
       */
     uint8_t panel_size[FLIPDOT_MAX_SUPPORTED_PANELS];
+    /**
+    * Default rendering mode
+    */
+    flipdot_rendering_mode_t rendering_mode;
 } __attribute__((packed)) flipdot_configuration_t;
 
 

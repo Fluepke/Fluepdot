@@ -25,10 +25,10 @@ static void system_configuration_load_defaults_wifi(system_configuration_t* syst
 #endif
     bzero(system_configuration->wifi.ssid, sizeof(system_configuration->wifi.ssid));
     strncpy(system_configuration->wifi.ssid, CONFIG_DEFAULT_SYSTEMCONFIGURATION_WIFI_SSID,
-            strnlen(CONFIG_DEFAULT_SYSTEMCONFIGURATION_WIFI_SSID, sizeof(system_configuration->wifi.ssid)));
+            sizeof(system_configuration->wifi.ssid));
     bzero(system_configuration->wifi.password, sizeof(system_configuration->wifi.password));
     strncpy(system_configuration->wifi.password, CONFIG_DEFAULT_SYSTEMCONFIGURATION_WIFI_PASSWORD,
-            strnlen(CONFIG_DEFAULT_SYSTEMCONFIGURATION_WIFI_PASSWORD, sizeof(system_configuration->wifi.password)));
+            sizeof(system_configuration->wifi.password));
 }
 
 static void system_configuration_load_defaults_rs485(system_configuration_t* system_configuration) {
@@ -44,6 +44,7 @@ static void system_configuration_load_defaults_rs485(system_configuration_t* sys
 }
 
 static void system_configuration_load_defaults_flipdot(system_configuration_t* system_configuration) {
+    system_configuration->flipdot.rendering_mode = 0;
     system_configuration->flipdot.panel_count = CONFIG_DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_COUNT;
     system_configuration->flipdot.panel_size[0] = CONFIG_DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_SIZE1;
     system_configuration->flipdot.panel_size[1] = CONFIG_DEFAULT_SYSTEMCONFIGURATION_FLIPDOT_PANEL_SIZE2;
@@ -59,7 +60,7 @@ void system_configuration_load_defaults(system_configuration_t* system_configura
 
     bzero(system_configuration->hostname, sizeof(system_configuration->hostname));
     strncpy(system_configuration->hostname, CONFIG_DEFAULT_SYSTEMCONFIGURATION_HOSTNAME,
-            strnlen(CONFIG_DEFAULT_SYSTEMCONFIGURATION_HOSTNAME, sizeof(system_configuration->hostname)));
+            sizeof(system_configuration->hostname));
 }
 
 static esp_err_t system_configuration_flash_defaults(system_configuration_t* system_configuration) {
@@ -126,5 +127,6 @@ void system_configuration_dump(system_configuration_t* system_configuration) {
     for (int i=0; i<FLIPDOT_MAX_SUPPORTED_PANELS; i++) {
         printf(", panel_size[%d] = %d", i, system_configuration->flipdot.panel_size[i]);
     }
+    printf("\nFlipdot rendering mode=%s\n", (system_configuration->flipdot.rendering_mode == 0) ? "full" : "differential");
     printf("\n");
 }

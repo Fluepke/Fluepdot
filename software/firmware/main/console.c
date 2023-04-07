@@ -33,11 +33,13 @@ esp_err_t console_initialize(system_configuration_t* system_configuration) {
     ERROR_CHECK(console_register_config_reset());
     ERROR_CHECK(console_register_config_wifi_ap());
     ERROR_CHECK(console_register_config_wifi_station());
+    ERROR_CHECK(console_register_config_rendering_mode());
     ERROR_CHECK(console_register_config_hostname());
     ERROR_CHECK(console_register_config_panel_layout());
     ERROR_CHECK(console_register_flipdot_clear());
     ERROR_CHECK(console_register_show_fonts());
     ERROR_CHECK(console_register_render_font());
+    ERROR_CHECK(console_register_framebuf64());
 
     snprintf(prompt, sizeof(prompt), LOG_COLOR_I "%s> " LOG_RESET_COLOR, system_configuration->hostname);
 
@@ -64,7 +66,7 @@ esp_err_t console_initialize_drivers() {
     /* Initialize the console */
     esp_console_config_t console_config = {
             .max_cmdline_args = 8,
-            .max_cmdline_length = 256,
+            .max_cmdline_length = 512,
             .hint_color = atoi(LOG_COLOR_CYAN)
     };
     ERROR_CHECK(esp_console_init(&console_config));

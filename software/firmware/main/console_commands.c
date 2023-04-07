@@ -1,13 +1,19 @@
-#include "esp_spi_flash.h"
+#include "argtable3/argtable3.h"
+#include "esp_err.h"
+#include "esp_flash.h"
 #include "esp_system.h"
 #include "esp_console.h"
 #include "esp_log.h"
+#include "esp_chip_info.h"
+#include <stdint.h>
 #include <string.h>
+#include "flipdot.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 #include "main.h"
 #include "util.h"
+#include "base64.h"
 #include "wifi.h"
 #include "console_commands.h"
 #include "font_rendering.h"
@@ -28,7 +34,7 @@ static int console_show_ip(int argc, char **argv) {
     esp_netif_ip_info_t ip;
     ESP_ERROR_CHECK(esp_netif_get_ip_info(wifi.netif, &ip));
     printf("- IPv4 address: " IPSTR "\n", IP2STR(&ip.ip));
-    esp_ip6_addr_t ip6[LWIP_IPV6_NUM_ADDRESSES];
+    esp_ip6_addr_t ip6[CONFIG_LWIP_IPV6_NUM_ADDRESSES];
     int ip6_addrs = esp_netif_get_all_ip6(wifi.netif, ip6);
     for (int j=0; j< ip6_addrs; ++j) {
         esp_ip6_addr_type_t ipv6_type = esp_netif_ip6_get_addr_type(&(ip6[j]));
@@ -110,12 +116,14 @@ static int console_show_version(int argc, char **argv) {
     printf("Chip info:\r\n");
     printf("\tmodel:%s\r\n", info.model == CHIP_ESP32 ? "ESP32" : "Unknow");
     printf("\tcores:%d\r\n", info.cores);
-    printf("\tfeature:%s%s%s%s%d%s\r\n",
+    uint32_t size_flash_chip;
+    esp_flash_get_size(NULL, &size_flash_chip);
+    printf("\tfeature:%s%s%s%s%lu%s\r\n",
            info.features & CHIP_FEATURE_WIFI_BGN ? "/802.11bgn" : "",
            info.features & CHIP_FEATURE_BLE ? "/BLE" : "",
            info.features & CHIP_FEATURE_BT ? "/BT" : "",
            info.features & CHIP_FEATURE_EMB_FLASH ? "/Embedded-Flash:" : "/External-Flash:",
-           spi_flash_get_chip_size() / (1024 * 1024), " MB");
+           size_flash_chip / (1024 * 1024), " MB");
     printf("\trevision number:%d\r\n", info.revision);
     return 0;
 }
@@ -302,6 +310,47 @@ esp_err_t console_register_config_wifi_station(void) {
 }
 
 static struct {
+    struct arg_str *rendering_mode;
+    struct arg_end *end;
+} console_rendering_mode_args;
+
+static int console_config_rendering_mode(int argc, char **argv) {
+    int nerrors = arg_parse(argc, argv, (void **)&console_rendering_mode_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, console_wifi_args.end, argv[0]);
+        return 1;
+    }
+
+    if (strcmp(console_rendering_mode_args.rendering_mode->sval[0], "full") == 0) {
+        system_configuration.flipdot.rendering_mode = 0;
+    } else if (strcmp(console_rendering_mode_args.rendering_mode->sval[0], "differential") == 0) {
+        system_configuration.flipdot.rendering_mode = 1;
+    } else {
+        printf("Must specify 'full' or 'differential'.");
+        return 1;
+    }
+
+    flipdot.rendering_options->mode = system_configuration.flipdot.rendering_mode;
+    return 0;
+}
+
+esp_err_t console_register_config_rendering_mode(void) {
+    console_rendering_mode_args.rendering_mode = arg_str1(NULL, NULL, "<mode>", "full/differential");
+    console_rendering_mode_args.end = arg_end(1);
+
+    const esp_console_cmd_t cmd = {
+        .command = "config_rendering_mode",
+        .help = "Set default rendering mode to use on power up",
+        .hint = NULL,
+        .func = &console_config_rendering_mode,
+        .argtable = &console_rendering_mode_args,
+    };
+
+    ERROR_CHECK(esp_console_cmd_register(&cmd));
+    return ESP_OK;
+}
+
+static struct {
     struct arg_str *hostname;
     struct arg_end *end;
 } console_hostname_args;
@@ -417,4 +466,51 @@ esp_err_t console_register_flipdot_clear(void) {
     };
 
     return esp_console_cmd_register(&cmd);
+}
+
+static struct {
+    struct arg_str* framebuf64;
+    struct arg_end* end;
+} console_framebuf64_args;
+
+esp_err_t console_framebuf64(int argc, char **argv) {
+    int nerrors = arg_parse(argc, argv, (void **) &console_framebuf64_args);
+    if (nerrors != 0) {
+        arg_print_errors(stderr, console_framebuf64_args.end, argv[0]);
+        return -1;
+    }
+    
+    size_t out_len = 0;
+    unsigned char * buf = base64_decode(console_framebuf64_args.framebuf64->sval[0],
+        strlen(console_framebuf64_args.framebuf64->sval[0]),
+        &out_len);
+    if (out_len != 230) {
+        printf("Expected that base64 to decode to 230 bytes, got %zu!", out_len);
+        return 1;
+    }
+    if (buf == NULL) {
+        printf("base64decode failed!");
+        return 2;
+    }
+    memcpy(flipdot.framebuffer->columns, buf, 230);
+    free(buf);
+    flipdot_set_dirty_flag(&flipdot);
+    return 0;
+}
+
+esp_err_t console_register_framebuf64(void) {
+    console_framebuf64_args.framebuf64 = arg_str1(NULL, NULL, "<framebuf64>", "base64 encoded 230 bytes long framebuffer");
+    console_framebuf64_args.end = arg_end(1);
+
+    const esp_console_cmd_t cmd = {
+        .command = "framebuf64",
+        .help = "Print a base64 encoded framebuffer",
+        .hint = NULL,
+        .func = &console_framebuf64,
+        .argtable = &console_framebuf64_args,
+    };
+
+    ERROR_CHECK(esp_console_cmd_register(&cmd));
+
+    return ESP_OK;
 }
