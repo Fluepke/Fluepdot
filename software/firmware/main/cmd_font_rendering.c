@@ -3,6 +3,7 @@
 #include "esp_console.h"
 #include "argtable3/argtable3.h"
 
+#include <string.h>
 #include "main.h"
 #include "font_rendering.h"
 
@@ -69,6 +70,7 @@ static int do_render_font(int argc, char **argv) {
         .font = font,
         .framebuffer = flipdot.framebuffer,
     };
+    memset(flipdot.framebuffer->columns, 0, 2 * flipdot.width);
 
     mf_render_justified(font, x, y, flipdot.width, render_font_args.text->sval[0],
             0, character_callback, (void*)&state);
